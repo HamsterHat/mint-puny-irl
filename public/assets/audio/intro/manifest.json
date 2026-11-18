@@ -1,0 +1,21 @@
+{
+  "sampleRate": 44100,
+  "channels": 2,
+  "format": "PCM signed 16-bit WAV",
+  "common": {
+    "shush": "/assets/audio/intro/shush.wav",
+    "faction": "/assets/audio/intro/faction.wav"
+  },
+  "roles": {
+    "puny": "/assets/audio/intro/puny.wav",
+    "policeman": "/assets/audio/intro/policeman.wav",
+    "technician": "/assets/audio/intro/technician.wav",
+    "spy": "/assets/audio/intro/spy.wav",
+    "judge": "/assets/audio/intro/judge.wav",
+    "lawyer": "/assets/audio/intro/lawyer.wav",
+    "mint-punya": "/assets/audio/intro/mint-punya.wav",
+    "mint-cook": "/assets/audio/intro/mint-cook.wav",
+    "glitch": "/assets/audio/intro/glitch.wav",
+    "jester": "/assets/audio/intro/jester.wav"
+  }
+}

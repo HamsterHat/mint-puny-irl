@@ -1,0 +1,133 @@
+[
+  {
+    "name": "Билет Обычного Пуни",
+    "id": "normal-punya-ticket",
+    "asset": "assets/rolepoints/normal-punya.png",
+    "coinsPrice": 19999,
+    "puniumPrice": 19,
+    "role": "puny",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Мятного Пуни",
+    "id": "mint-punya-ticket",
+    "asset": "assets/rolepoints/mint-punya.png",
+    "coinsPrice": 29999,
+    "puniumPrice": 29,
+    "role": "mint-punya",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Мятного Повара",
+    "id": "mint-cook-ticket",
+    "asset": "assets/rolepoints/mint-cook.png",
+    "coinsPrice": 31999,
+    "puniumPrice": 31,
+    "role": "mint-cook",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Глитча",
+    "id": "glitch-ticket",
+    "asset": "assets/rolepoints/glitch.png",
+    "coinsPrice": 56999,
+    "puniumPrice": 56,
+    "role": "glitch",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Шута",
+    "id": "jester-ticket",
+    "asset": "assets/rolepoints/jester.png",
+    "coinsPrice": 32999,
+    "puniumPrice": 32,
+    "role": "jester",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Техника",
+    "id": "technician-ticket",
+    "asset": "assets/rolepoints/technician.png",
+    "coinsPrice": 25999,
+    "puniumPrice": 25,
+    "role": "technician",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Полицейского",
+    "id": "policeman-ticket",
+    "asset": "assets/rolepoints/policeman.png",
+    "coinsPrice": 27999,
+    "puniumPrice": 27,
+    "role": "policeman",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Шпиона",
+    "id": "spy-ticket",
+    "asset": "assets/rolepoints/spy.png",
+    "coinsPrice": 30999,
+    "puniumPrice": 30,
+    "role": "spy",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Судьи",
+    "id": "judge-ticket",
+    "asset": "assets/rolepoints/judge.png",
+    "coinsPrice": 21999,
+    "puniumPrice": 21,
+    "role": "judge",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Адвоката",
+    "id": "lawyer-ticket",
+    "asset": "assets/rolepoints/lawyer.png",
+    "coinsPrice": 21999,
+    "puniumPrice": 21,
+    "role": "lawyer",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Будильщика",
+    "id": "alarm-clock-ticket",
+    "asset": "assets/rolepoints/alarm-clock.png",
+    "coinsPrice": 41999,
+    "puniumPrice": 41,
+    "role": "alarm",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Хакера",
+    "id": "terminal-hacker-ticket",
+    "asset": "assets/rolepoints/terminal-hacker.png",
+    "coinsPrice": 45999,
+    "puniumPrice": 45,
+    "role": "hacker",
+    "givenOnBuy": [],
+    "buyable": true
+  },
+  {
+    "name": "Билет Мятного Пуника",
+    "id": "mint-punik-survivor-ticket",
+    "asset": "assets/rolepoints/mint-punik-survivor.png",
+    "coinsPrice": 36999,
+    "puniumPrice": 36,
+    "role": "mint-punik",
+    "givenOnBuy": [],
+    "buyable": true
+  }
+]
+

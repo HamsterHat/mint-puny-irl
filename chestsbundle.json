@@ -1,0 +1,269 @@
+[
+  {
+    "name": "Деревянный ящик",
+    "id": "wooden-chest",
+    "asset": "assets/chests/wooden.png",
+    "coinsPrice": 550,
+    "puniumPrice": null,
+    "buyable": true,
+    "coins": [
+      {
+        "amount": 0,
+        "chance": 60
+      },
+      {
+        "amount": 95,
+        "chance": 20
+      },
+      {
+        "amount": 100,
+        "chance": 10
+      },
+      {
+        "amount": 520,
+        "chance": 6
+      },
+      {
+        "amount": 700,
+        "chance": 4
+      }
+    ],
+    "items": {
+      "mode": "independent",
+      "rolls": [
+        {
+          "category": "colors",
+          "pool": [],
+          "chance": 0.07,
+          "amount": 1
+        },
+        {
+          "category": "hats",
+          "pool": [],
+          "chance": 25,
+          "amount": 1
+        },
+        {
+          "category": "glasses",
+          "pool": [],
+          "chance": 12,
+          "amount": 1
+        },
+        {
+          "category": "pets",
+          "pool": [],
+          "chance": 5,
+          "amount": 1
+        }
+      ]
+    },
+    "rolepoints": {
+      "mode": "single",
+      "rolls": [
+        {
+          "id": null,
+          "chance": 96
+        },
+        {
+          "id": "normal-punya-ticket",
+          "chance": 1.2,
+          "amount": 1
+        },
+        {
+          "id": "mint-punya-ticket",
+          "chance": 1,
+          "amount": 1
+        },
+        {
+          "id": "mint-cook-ticket",
+          "chance": 1,
+          "amount": 1
+        },
+        {
+          "id": "glitch-ticket",
+          "chance": 0.4,
+          "amount": 1
+        },
+        {
+          "id": "jester-ticket",
+          "chance": 0.4,
+          "amount": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "Военный ящик",
+    "id": "military-chest",
+    "asset": "assets/chests/military.png",
+    "coinsPrice": 950,
+    "puniumPrice": null,
+    "buyable": true,
+    "coins": [
+      {
+        "amount": 110,
+        "chance": 60
+      },
+      {
+        "amount": 370,
+        "chance": 20
+      },
+      {
+        "amount": 630,
+        "chance": 10
+      },
+      {
+        "amount": 810,
+        "chance": 6
+      },
+      {
+        "amount": 1205,
+        "chance": 4
+      }
+    ],
+    "items": {
+      "mode": "independent",
+      "rolls": [
+        {
+          "category": "colors",
+          "pool": [],
+          "chance": 1.7,
+          "amount": 1
+        },
+        {
+          "category": "hats",
+          "pool": [],
+          "chance": 20,
+          "amount": 1
+        },
+        {
+          "category": "glasses",
+          "pool": [],
+          "chance": 15,
+          "amount": 1
+        },
+        {
+          "category": "pets",
+          "pool": [],
+          "chance": 5,
+          "amount": 1
+        }
+      ]
+    },
+    "rolepoints": {
+      "mode": "single",
+      "rolls": [
+        {
+          "id": null,
+          "chance": 90
+        },
+        {
+          "id": "normal-punya-ticket",
+          "chance": 5,
+          "amount": 1
+        },
+        {
+          "id": "technician-ticket",
+          "chance": 2.5,
+          "amount": 1
+        },
+        {
+          "id": "spy-ticket",
+          "chance": 1.5,
+          "amount": 1
+        },
+        {
+          "id": "judge-ticket",
+          "chance": 0.6,
+          "amount": 1
+        },
+        {
+          "id": "lawyer-ticket",
+          "chance": 0.4,
+          "amount": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "Железный ящик",
+    "id": "iron-chest",
+    "asset": "assets/chests/iron.png",
+    "coinsPrice": 1100,
+    "puniumPrice": null,
+    "buyable": true,
+    "coins": [
+      {
+        "amount": 60,
+        "chance": 60
+      },
+      {
+        "amount": 120,
+        "chance": 20
+      },
+      {
+        "amount": 210,
+        "chance": 10
+      },
+      {
+        "amount": 435,
+        "chance": 6
+      },
+      {
+        "amount": 520,
+        "chance": 4
+      }
+    ],
+    "items": {
+      "mode": "independent",
+      "rolls": [
+        {
+          "category": "colors",
+          "pool": [],
+          "chance": 2,
+          "amount": 1
+        },
+        {
+          "category": "glasses",
+          "pool": [],
+          "chance": 15,
+          "amount": 1
+        }
+      ]
+    },
+    "rolepoints": {
+      "mode": "single",
+      "rolls": [
+        {
+          "id": null,
+          "chance": 85
+        },
+        {
+          "id": "normal-punya-ticket",
+          "chance": 7.5,
+          "amount": 1
+        },
+        {
+          "id": "policeman-ticket",
+          "chance": 3.5,
+          "amount": 1
+        },
+        {
+          "id": "technician-ticket",
+          "chance": 2.5,
+          "amount": 1
+        },
+        {
+          "id": "spy-ticket",
+          "chance": 1,
+          "amount": 1
+        },
+        {
+          "id": "glitch-ticket",
+          "chance": 0.5,
+          "amount": 1
+        }
+      ]
+    }
+  }
+]

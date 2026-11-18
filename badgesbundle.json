@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Обычный",
+    "id": "default",
+    "asset": "assets/badges/default.png",
+    "price": 0,
+    "free": true,
+    "buyable": true
+  },
+  {
+    "name": "Белый",
+    "id": "white",
+    "asset": "assets/badges/white.png",
+    "price": 0,
+    "free": true,
+    "buyable": true
+  },
+  {
+    "name": "Мятный",
+    "id": "mint",
+    "asset": "assets/badges/mint.png",
+    "price": 80,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Красный",
+    "id": "red",
+    "asset": "assets/badges/red.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Оранжевый",
+    "id": "orange",
+    "asset": "assets/badges/orange.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Жёлтый",
+    "id": "yellow",
+    "asset": "assets/badges/yellow.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Лаймовый",
+    "id": "lime",
+    "asset": "assets/badges/lime.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Зелёный",
+    "id": "green",
+    "asset": "assets/badges/green.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Синий",
+    "id": "blue",
+    "asset": "assets/badges/blue.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Бирюза",
+    "id": "cyan",
+    "asset": "assets/badges/cyan.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Розовый",
+    "id": "rose",
+    "asset": "assets/badges/rose.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Фиолетовый",
+    "id": "purple",
+    "asset": "assets/badges/purple.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  },
+  {
+    "name": "Чёрный",
+    "id": "black",
+    "asset": "assets/badges/black.png",
+    "price": 50,
+    "free": false,
+    "buyable": true
+  }
+]

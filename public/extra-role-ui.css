@@ -1,0 +1,10 @@
+.fix-field{display:flex;flex-direction:column;gap:7px;margin:16px 0;}
+.fix-field input,.fix-field select{padding:12px;border:2px solid var(--line);border-radius:10px;background:white;font:inherit;color:inherit;}
+.fix-code{margin:20px 0 8px;font-size:clamp(32px,8vw,56px);font-family:monospace;letter-spacing:.25em;color:#426f55;text-align:center;user-select:none;}
+.fix-red-button{display:block;width:135px;height:135px;margin:24px auto 12px;border:7px solid #a9565f;border-radius:50%;background:#e59199;font-size:26px;font-weight:bold;box-shadow:0 7px 0 #a9565f;}
+.fix-red-button:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 #a9565f;}
+#fix-error{color:#af4f5a;min-height:25px;}
+#role-toast{position:fixed;top:20px;right:20px;z-index:90;max-width:min(370px,calc(100vw - 40px));background:#fff9db;}
+#role-toast button{margin-top:10px;}
+.intel-entry,.notice-entry{padding:12px;border:1px solid var(--line);border-radius:12px;background:#f1f7ef;white-space:pre-wrap;overflow-wrap:anywhere;}
+#emergency-meta{margin-top:16px;font-size:13px;line-height:1.6;}

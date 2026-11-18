@@ -1,0 +1,8 @@
+[
+  { "name": "Без очков", "id": "not_a_glasses", "asset": "assets/glasses/not_a_glasses.png", "price": 0, "free": true },
+  { "name": "Круглые Очки", "id": "circle_glasses", "asset": "assets/glasses/circle_glasses.png", "price": 45, "free": false },
+  { "name": "Темные Очки", "id": "dark_glasses", "asset": "assets/glasses/dark_glasses.png", "price": 250, "free": false },
+  { "name": "Квадратные Очки", "id": "glasses", "asset": "assets/glasses/glasses.png", "price": 50, "free": false },
+  { "name": "Очки - Сердечки", "id": "heart_glasses", "asset": "assets/glasses/heart_glasses.png", "price": 45, "free": false },
+  { "name": "Пунь Правая Рука: Испуньпеление", "id": "rhp", "asset": "assets/glasses/rhp.png", "price": null, "free": false, "buyable": false }
+]

@@ -1,0 +1,11 @@
+.meeting-role-abilities{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px;padding-top:12px;border-top:2px dashed var(--line);}
+.meeting-ability{display:flex;align-items:center;justify-content:center;gap:8px;background:#ede2f4;}
+.meeting-ability img{width:42px;height:42px;object-fit:contain;image-rendering:pixelated;}
+.advanced-error{min-height:22px;margin-bottom:10px;color:#a95062;}
+#resolution-role-controls{position:fixed;right:18px;top:18px;z-index:150;background:#efe0f5;text-align:center;}
+#resolution-role-controls p{margin-bottom:8px;font-size:13px;}
+#termination-overlay{position:fixed;inset:0;z-index:180;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;color:#b6ffcd;background:#13251ff7;text-align:center;overflow:hidden;}
+#termination-overlay h1{font-family:monospace;font-size:clamp(23px,5vw,58px);text-shadow:3px 0 #d753a7,-3px 0 #69d8f2;animation:termination-glitch .18s steps(2,end) infinite;}
+#termination-overlay::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 5px,#b9ffd219 6px 7px);}
+@keyframes termination-glitch{0%{transform:translate(0,0)}25%{transform:translate(5px,-2px)}50%{transform:translate(-4px,1px)}75%{transform:translate(2px,3px)}}
+@media(prefers-reduced-motion:reduce){#termination-overlay h1{animation:none;}}

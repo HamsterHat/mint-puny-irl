@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'">
+<title>Энциклопедия Пуней</title>
+<link rel="stylesheet" href="/wiki/wiki.css"><script src="/wiki/wiki.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#wiki-main">К содержимому</a>
+<header class="topbar">
+<button id="menu-button" class="icon-button mobile-menu" aria-label="Открыть меню" aria-expanded="false"><img src="/wiki/icons/menu.svg" alt=""></button>
+<a class="brand" href="#/"><img src="/wiki/icons/book.svg" alt=""><span id="brand-title">Энциклопедия Пуней</span></a>
+<nav id="top-tabs" aria-label="Разделы"></nav>
+<div class="header-actions"><button id="my-role" disabled title="Открыть свою роль">Моя роль</button><button id="reload-button" class="icon-button" aria-label="Обновить вики"><img src="/wiki/icons/reload.svg" alt=""></button><button id="theme-button" class="icon-button" aria-label="Переключить тему"><img src="/wiki/icons/theme.svg" alt=""></button><button id="close-button" class="icon-button" aria-label="Закрыть вики" hidden><img src="/wiki/icons/close.svg" alt=""></button></div>
+</header>
+<div class="layout">
+<aside id="sidebar" class="sidebar" aria-label="Навигация">
+<div class="search-area"><label class="search-label" for="wiki-search">Поиск по вики</label><div class="search-box"><img src="/wiki/icons/search.svg" alt=""><input id="wiki-search" type="search" placeholder="Роль, правило, способность…" autocomplete="off" aria-controls="search-results"></div><div id="search-results" class="search-results" role="region" aria-label="Результаты поиска" hidden></div></div>
+<nav id="side-navigation" aria-label="Статьи"></nav>
+<p id="page-count" class="page-count"></p>
+</aside>
+<button id="menu-backdrop" class="menu-backdrop" aria-label="Закрыть меню" hidden></button>
+<main id="wiki-main" class="wiki-main" tabindex="-1">
+<div id="page-status" class="page-status" role="status" aria-live="polite"></div>
+<nav id="breadcrumbs" class="breadcrumbs" aria-label="Путь"></nav>
+<header id="article-header" class="article-header" hidden><img id="article-icon" src="/wiki/icons/book.svg" alt=""><h1 id="article-title"></h1></header>
+<section id="home-panel" class="home-panel"><img class="home-icon" src="/wiki/icons/book.svg" alt=""><h1>Энциклопедия Пуней</h1><p>Здесь будут собраны статьи об игре.</p><div id="section-cards" class="section-cards"></div></section>
+<article id="article-body" class="article-body" hidden></article>
+<footer id="article-footer" class="article-footer" hidden><button id="copy-link">Скопировать ссылку</button><button id="scroll-top">Наверх ↑</button></footer>
+</main>
+<aside class="toc-panel" aria-label="На этой странице"><h2>На этой странице</h2><nav id="toc"></nav><p id="context-caption" class="context-caption"></p></aside>
+</div>
+</body></html>

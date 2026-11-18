@@ -1,0 +1,462 @@
+{
+  "version": 2,
+  "title": "Энциклопедия Пуней",
+  "sections": [
+    {
+      "id": "start",
+      "title": "Начало игры",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "roles",
+      "title": "Роли",
+      "icon": "/wiki/icons/roles.svg",
+      "groups": [
+        {
+          "id": "innocent",
+          "title": "Мирные",
+          "icon": "/wiki/icons/leaf.svg"
+        },
+        {
+          "id": "mint",
+          "title": "Мятные",
+          "icon": "/wiki/icons/bolt.svg"
+        },
+        {
+          "id": "neutral",
+          "title": "Нейтралы",
+          "icon": "/wiki/icons/star.svg"
+        }
+      ]
+    },
+    {
+      "id": "modifiers",
+      "title": "Модификаторы",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "rules",
+      "title": "Правила",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "interactions",
+      "title": "Взаимодействия",
+      "icon": "/wiki/icons/link.svg"
+    },
+    {
+      "id": "economy",
+      "title": "Магазин и предметы",
+      "icon": "/wiki/icons/coin.svg"
+    },
+    {
+      "id": "guides",
+      "title": "Гайды и стратегии",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "safety",
+      "title": "Честная игра",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "offtopic",
+      "title": "Оффтоп",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "secret",
+      "title": "Секретное",
+      "icon": "/wiki/icons/star.svg"
+    }
+  ],
+  "pages": [
+    {
+      "id": "getting-started",
+      "title": "Первый матч",
+      "section": "start",
+      "file": "articles/getting-started.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "factions",
+      "title": "Фракции",
+      "section": "start",
+      "file": "articles/factions.md",
+      "icon": "/wiki/icons/roles.svg"
+    },
+    {
+      "id": "puny",
+      "title": "Обычный Пуня",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "puny",
+      "file": "articles/roles/puny.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "policeman",
+      "title": "Полицейский",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "policeman",
+      "file": "articles/roles/policeman.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "technician",
+      "title": "Техник",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "technician",
+      "file": "articles/roles/technician.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "spy",
+      "title": "Шпион",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "spy",
+      "file": "articles/roles/spy.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "judge",
+      "title": "Судья",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "judge",
+      "file": "articles/roles/judge.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "lawyer",
+      "title": "Адвокат",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "lawyer",
+      "file": "articles/roles/lawyer.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "alarm",
+      "title": "Будильщик",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "alarm",
+      "file": "articles/roles/alarm.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "hacker",
+      "title": "Хакер",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "hacker",
+      "file": "articles/roles/hacker.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+
+    {
+      "id": "mint-punya",
+      "title": "Мятный Пуня",
+      "section": "roles",
+      "group": "mint",
+      "roleId": "mint-punya",
+      "file": "articles/roles/mint-punya.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+    {
+      "id": "mint-cook",
+      "title": "Мятный Повар",
+      "section": "roles",
+      "group": "mint",
+      "roleId": "mint-cook",
+      "file": "articles/roles/mint-cook.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+    {
+      "id": "glitch",
+      "title": "Глитч",
+      "section": "roles",
+      "group": "mint",
+      "roleId": "glitch",
+      "file": "articles/roles/glitch.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+
+    {
+      "id": "jester",
+      "title": "Шут",
+      "section": "roles",
+      "group": "neutral",
+      "roleId": "jester",
+      "file": "articles/roles/jester.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "mint-punik",
+      "title": "Мятный Пуник",
+      "section": "roles",
+      "group": "neutral",
+      "roleId": "mint-punik",
+      "file": "articles/roles/mint-punik.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "chemist",
+      "title": "Химик",
+      "section": "roles",
+      "group": "innocent",
+      "roleId": "chemist",
+      "file": "articles/roles/chemist.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "sapper",
+      "title": "Сапёр",
+      "section": "roles",
+      "group": "mint",
+      "roleId": "sapper",
+      "file": "articles/roles/sapper.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+
+    {
+      "id": "sixth-sense",
+      "title": "Шестое чувство",
+      "section": "modifiers",
+      "file": "articles/modifiers/sixth-sense.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "gun",
+      "title": "Пушка",
+      "section": "modifiers",
+      "file": "articles/modifiers/gun.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+
+    {
+      "id": "irl-play",
+      "title": "Игра в реальности",
+      "section": "rules",
+      "file": "articles/rules/irl-play.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "tasks",
+      "title": "Задания",
+      "section": "rules",
+      "file": "articles/rules/tasks.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "meetings",
+      "title": "Собрания и голосование",
+      "section": "rules",
+      "file": "articles/rules/meetings.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "sleeping-and-exile",
+      "title": "Сон и изгнание",
+      "section": "rules",
+      "file": "articles/rules/sleeping-and-exile.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "victory",
+      "title": "Кто побеждает",
+      "section": "rules",
+      "file": "articles/rules/victory.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "cooldowns",
+      "title": "Перезарядки и использования",
+      "section": "rules",
+      "file": "articles/rules/cooldowns.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "crises",
+      "title": "Поломки",
+      "section": "rules",
+      "file": "articles/rules/crises.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+    {
+      "id": "match-settings",
+      "title": "Настройки матча",
+      "section": "rules",
+      "file": "articles/rules/match-settings.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+
+    {
+      "id": "shields",
+      "title": "Защита, щит и почему это не одно и то же",
+      "section": "interactions",
+      "file": "articles/interactions/shields.md",
+      "icon": "/wiki/icons/link.svg"
+    },
+    {
+      "id": "hack",
+      "title": "Как работает HACK",
+      "section": "interactions",
+      "file": "articles/interactions/hack.md",
+      "icon": "/wiki/icons/link.svg"
+    },
+    {
+      "id": "terminate",
+      "title": "TERMINATE",
+      "section": "interactions",
+      "file": "articles/interactions/terminate.md",
+      "icon": "/wiki/icons/link.svg"
+    },
+
+    {
+      "id": "currencies",
+      "title": "Коины и пуниум",
+      "section": "economy",
+      "file": "articles/economy/currencies.md",
+      "icon": "/wiki/icons/coin.svg"
+    },
+    {
+      "id": "rolepoints",
+      "title": "RPoints — билеты ролей",
+      "section": "economy",
+      "file": "articles/economy/rolepoints.md",
+      "icon": "/wiki/icons/coin.svg"
+    },
+    {
+      "id": "chests",
+      "title": "Сундуки",
+      "section": "economy",
+      "file": "articles/economy/chests.md",
+      "icon": "/wiki/icons/coin.svg"
+    },
+    {
+      "id": "cosmetics",
+      "title": "Косметика и бейджи",
+      "section": "economy",
+      "file": "articles/economy/cosmetics.md",
+      "icon": "/wiki/icons/coin.svg"
+    },
+
+    {
+      "id": "strategy-guide",
+      "title": "Стратегии: полный гайд по игре",
+      "section": "guides",
+      "file": "articles/guides/strategy-guide.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "strategy-innocent",
+      "title": "Стратегии Мирных",
+      "section": "guides",
+      "file": "articles/guides/strategy-innocent.md",
+      "icon": "/wiki/icons/leaf.svg"
+    },
+    {
+      "id": "strategy-mint",
+      "title": "Стратегии Мятных",
+      "section": "guides",
+      "file": "articles/guides/strategy-mint.md",
+      "icon": "/wiki/icons/bolt.svg"
+    },
+    {
+      "id": "strategy-neutral",
+      "title": "Стратегии Нейтралов",
+      "section": "guides",
+      "file": "articles/guides/strategy-neutral.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "common-mistakes",
+      "title": "Частые ошибки и смешные случаи",
+      "section": "guides",
+      "file": "articles/guides/common-mistakes.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "for-gifted",
+      "title": "Для особо одарённых",
+      "section": "guides",
+      "file": "articles/guides/for-gifted.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+
+    {
+      "id": "metagaming",
+      "title": "Запрет метагейминга",
+      "section": "safety",
+      "file": "articles/safety/metagaming.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "device-privacy",
+      "title": "Экран — твой секрет",
+      "section": "safety",
+      "file": "articles/safety/device-privacy.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+    {
+      "id": "lesha-sees-all",
+      "title": "Лёша всё видит",
+      "section": "safety",
+      "file": "articles/safety/lesha-sees-all.md",
+      "icon": "/wiki/icons/book.svg"
+    },
+
+    {
+      "id": "calculus",
+      "title": "Мини-лекция: матанализ для Пунь",
+      "section": "offtopic",
+      "file": "articles/offtopic/calculus.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "mint-formula",
+      "title": "Формула мяты, мистера Сыра и спагетти",
+      "section": "offtopic",
+      "file": "articles/offtopic/mint-formula.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+
+    {
+      "id": "new-roles",
+      "title": "Секретная статья: новые роли",
+      "section": "secret",
+      "file": "articles/secret/new-roles.md",
+      "icon": "/wiki/icons/star.svg"
+    },
+
+
+    {
+      "id": "headhunter",
+      "title": "Хедхантер",
+      "file": "articles/roles/headhunter.md",
+      "section": "roles",
+      "group": "neutral",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "executioner",
+      "title": "Палач",
+      "file": "articles/roles/executioner.md",
+      "section": "roles",
+      "group": "neutral",
+      "icon": "/wiki/icons/star.svg"
+    },
+    {
+      "id": "contracts",
+      "title": "Контракты",
+      "file": "articles/rules/contracts.md",
+      "section": "rules",
+      "icon": "/wiki/icons/star.svg"
+    }
+  ]
+}

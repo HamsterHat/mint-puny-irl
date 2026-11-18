@@ -1,0 +1,67 @@
+.# Зависимости (Dependencies)
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+
+# Переменные окружения и секреты (Environment variables)
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Логи (Logs)
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Сборка и дистрибутивы (Build outputs)
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+
+# Кэш инструментов и линтеров (Caches)
+.npm
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
+.vite/
+.turbo/
+*.tsbuildinfo
+
+# Покрытие тестами (Test coverage)
+coverage/
+*.lcov
+.nyc_output/
+
+# Данные времени выполнения (Runtime data)
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Системные файлы ОС (OS files)
+.DS_Store
+Thumbs.db
+
+# Настройки редакторов и IDE (Editors)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+
+users_db.json*
+*.bak
+*копия*

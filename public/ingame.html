@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Пуня · Игра</title>
+  <link rel="stylesheet" href="/meeting.css"><link rel="stylesheet" href="/rpoints-ui.css"><link rel="stylesheet" href="/ingame.css"><link rel="stylesheet" href="/round-ui.css"><script src="/winner-skins.js" defer></script><link rel="stylesheet" href="/extra-role-ui.css"><link rel="stylesheet" href="/hacker-terminal.css"><link rel="stylesheet" href="/ability-visuals.css">
+  <script src="/socket.io/socket.io.js" defer></script><script src="/rpoints-ui.js" defer></script><script src="/game-audio.js" defer></script><script src="/meeting-ui.js" defer></script><script src="/ingame.js" defer></script><script src="/round-ui.js" defer></script><script src="/extra-role-ui.js" defer></script><script src="/intro-audio.js" defer></script><script src="/hacker-terminal.js" defer></script><script src="/mint-punik-ui.js" defer></script><script src="/ability-visuals.js" defer></script><script src="/wiki-bridge.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div><h1 id="player-name">Игра</h1><p id="connection-status" class="muted">Подключение…</p></div><div class="top-actions">
+    <button id="sound-button" type="button" aria-pressed="true">🔊 Звук</button><button id="notices-button" type="button">Сообщения</button><button id="intel-button" type="button" hidden>Сведения</button>
+    <button id="settings-button" type="button">⚙ Настройки</button><button id="host-button" type="button" hidden>Ведущий</button><button id="start-button" type="button" hidden>Начать раунд</button><button id="finish-button" type="button" hidden>Завершить</button>
+  </div></header>
+  <section id="task-progress-panel" class="task-progress-panel paper" hidden><div class="task-progress-header"><span>Общие задания</span><span id="task-progress-text">0 / 0</span></div><progress id="task-progress" class="task-progress" value="0" max="1" aria-label="Выполненные настоящие задания"></progress></section>
+  <main class="game-layout"><section class="paper"><h2 id="tasks-title">Задания</h2><p id="tasks-hint" class="muted"></p><section id="santa-lists" hidden>
+  <h3>Хорошие игроки</h3>
+  <ul id="santa-good-list"></ul>
+
+  <h3>Плохие игроки</h3>
+  <ul id="santa-bad-list"></ul>
+</section><div id="tasks-list" class="tasks"></div></section>
+    <section class="center"><h2 id="role-name">Подготовка</h2><p id="role-description"></p><p id="state-label"></p><div id="tablet-warning" class="tablet-off" hidden>Планшет временно отключён</div><div id="rocket-warning" class="alert" hidden><p>Ракетный удар: <span id="rocket-time"></span></p><p class="muted">Починка — на ракетном электрощите.</p></div><div id="sapper-warning" class="alert" hidden>
+  <p>Сапёр активировал заряд: <span id="sapper-time"></span></p>
+  <p class="muted">Все заминированные будут усыплены, если Сапёр не выбудет из игры.</p>
+</div><p id="result-label"></p><button id="return-lobby-button" type="button" hidden>Вернуться в лобби</button></section>
+  </main>
+  <nav id="abilities" class="abilities" aria-label="Способности и Report" hidden><div id="role-abilities" class="role-abilities"></div><button id="report-button" class="ability-button" type="button" disabled><img src="/assets/ui/abilities/report.png" alt=""><span class="ability-label">Report</span><small></small></button></nav>
+  <dialog id="settings-dialog" class="paper"><header class="dialog-header"><h2>Настройки раунда</h2><button type="button" data-close="settings-dialog">✕</button></header><form id="settings-form"><div id="settings-fields"></div><footer class="dialog-footer"><button id="save-settings" type="submit">Сохранить</button></footer></form></dialog>
+  <dialog id="targets-dialog" class="paper"><header class="dialog-header"><h2 id="targets-title">Выбери игрока</h2><button type="button" data-close="targets-dialog">✕</button></header><div id="targets-list" class="list"></div></dialog>
+  <dialog id="hack-dialog" class="paper"><header class="dialog-header"><h2 id="hack-title">HACK</h2><button type="button" data-close="hack-dialog">✕</button></header><p class="muted">Выбери способность цели.</p><div id="hack-options" class="list"></div></dialog>
+  <dialog id="sabotage-dialog" class="paper"><header class="dialog-header"><h2>Поломки</h2><button type="button" data-close="sabotage-dialog">✕</button></header><div class="list"><button id="rocket-button" type="button">Ракетный удар</button><button id="wifi-button" type="button">Отключить Wi-Fi</button></div></dialog>
+  <dialog id="host-dialog" class="paper"><header class="dialog-header"><h2>Действия ведущего</h2><button type="button" data-close="host-dialog">✕</button></header><p class="muted">Ручные действия ведущего вне собрания.</p><div class="dialog-footer"><button id="wake-button" type="button">Разбудить игрока</button><button id="exile-button" type="button">Изгнать игрока</button></div></dialog>
+  <dialog id="message-dialog" class="paper" aria-labelledby="message-title" aria-describedby="message-text"><h2 id="message-title"></h2><p id="message-text"></p><button type="button" data-close="message-dialog">Понятно</button></dialog>
+
+  <dialog id="meeting-dialog" class="paper" aria-labelledby="meeting-title">
+    <header class="meeting-header"><h2 id="meeting-title">EMERGENCY MEETING</h2><p id="meeting-time"></p><p id="meeting-vote-status"></p><p id="meeting-error" role="status"></p></header>
+    <section class="meeting-action-panel" hidden><h3>Твои способности на собрании</h3><div id="meeting-actions" class="meeting-actions"></div></section>
+    <div id="meeting-players" class="meeting-grid"></div>
+    <footer class="meeting-footer"><button id="meeting-skip" type="button">Skip</button></footer>
+    <section id="blackjack-guess-modal" class="gun-picker" hidden aria-label="Угадывание роли Блэкджека">
+      <div class="gun-picker-panel">
+        <header class="gun-picker-header">
+          <h2>БЛЭКДЖЕК</h2>
+          <button type="button" id="blackjack-guess-cancel" class="gun-picker-close" title="Закрыть">×</button>
+        </header>
+        <p id="blackjack-picker-target" class="gun-picker-target"></p>
+        <input type="search" id="blackjack-role-search" class="gun-role-search" placeholder="Найти роль…" aria-label="Поиск роли">
+        <div id="blackjack-role-list" class="gun-role-list"></div>
+      </div>
+    </section>
+    <section id="double-shot-modal" class="gun-picker" hidden aria-label="Двойной выстрел">
+      <div class="gun-picker-panel">
+        <header class="gun-picker-header">
+          <h2>ДВОЙНОЙ ВЫСТРЕЛ</h2>
+          <button type="button" id="double-shot-cancel" class="gun-picker-close" title="Закрыть">×</button>
+        </header>
+
+        <div class="double-shot-grid">
+          <div class="double-shot-column">
+            <label class="double-shot-label" for="double-shot-player-a">Первая цель</label>
+            <select id="double-shot-player-a" class="double-shot-select"></select>
+
+            <label class="double-shot-label" for="double-shot-role-a">Роль первой цели</label>
+            <select id="double-shot-role-a" class="double-shot-select"></select>
+          </div>
+
+          <div class="double-shot-column">
+            <label class="double-shot-label" for="double-shot-player-b">Вторая цель</label>
+            <select id="double-shot-player-b" class="double-shot-select"></select>
+
+            <label class="double-shot-label" for="double-shot-role-b">Роль второй цели</label>
+            <select id="double-shot-role-b" class="double-shot-select"></select>
+          </div>
+        </div>
+
+        <button type="button" id="double-shot-fire" class="kick-terminate double-shot-fire">
+          SHOOT
+        </button>
+      </div>
+    </section>
+  </dialog>
+  <div id="ejection-overlay" role="status" hidden>
+    <h2 id="ejection-title"></h2><div class="ejection-scene"><div class="pond"></div><canvas id="ejection-player" width="160" height="160"></canvas></div>
+    <section class="meeting-action-panel" hidden><div id="ejection-actions" class="meeting-actions"></div></section>
+  </div>
+  <div id="termination-overlay" role="status" hidden><h1>&lt;MEETING TERMINATED&gt;</h1></div>
+  <template id="meeting-player-template"><article class="meeting-player"><button class="meeting-select" type="button"><canvas width="100" height="100"></canvas><span class="meeting-name"></span></button><div class="meeting-confirm" hidden><button class="vote-yes" type="button" aria-label="Подтвердить голос">✓</button><button class="vote-no" type="button" aria-label="Отменить выбор">✕</button></div></article></template>
+  <template id="meeting-action-template"><button class="meeting-ability" type="button"><img alt=""><span></span><small></small></button></template>
+
+  <section id="round-intro" hidden aria-label="Начало раунда">
+    <div id="intro-shush" class="intro-screen"><img src="/assets/ui/intro/octopus.png" alt="Осьминожка"><h1>Т-с-с-с-с-с!</h1></div>
+    <div id="intro-faction" class="intro-screen" hidden><h1 id="intro-faction-name"></h1><div id="intro-teammates"></div><p id="intro-modifier-names" class="intro-modifiers"></p></div>
+    <div id="intro-role" class="intro-screen" hidden><h1 id="intro-role-name"></h1><p id="intro-role-description"></p><canvas id="intro-self" width="220" height="220"></canvas><p id="intro-modifier-descriptions"></p></div>
+  </section>
+  <section id="round-result" hidden aria-live="polite"><h1 id="result-heading"></h1><p id="result-reason"></p><p id="result-reward"></p><button id="result-return" type="button">Вернуться в лобби</button></section>
+  <div id="sixth-sense-overlay" hidden aria-hidden="true"></div>
+  <!-- Иней (Ментол) -->
+  <div id="frost-overlay"></div>
+  <div id="blackmail-warning" hidden>
+    <strong>YOU ARE BLACKMAILED!</strong>
+    <span>До конца собрания разговаривать запрещено.</span>
+  </div>
+
+  <div id="santa-snow-overlay" hidden>
+    <div class="santa-snow-message">
+      <h2>Тебя засыпало снегом</h2>
+      <p id="santa-snow-time"></p>
+    </div>
+  </div>
+
+  <div id="santa-gift-status" hidden></div>
+
+  <!-- Бейдж Ветерана -->
+  <div id="veteran-badge" class="veteran-badge hidden">НА СТРЕМЕ</div>
+
+  <!-- Панель заметок Следопыта -->
+  <div id="tracker-panel" class="tracker-panel hidden">
+    <h3>Заметки Следопыта</h3>
+    <ul id="tracker-notes-list"></ul>
+    <input id="tracker-note-input" type="text" placeholder="Новая заметка..." />
+    <button id="tracker-note-add">Добавить</button>
+  </div>
+
+  <!-- Модалка допроса (для цели) -->
+  <div id="interrogation-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="interrogation-question"></h3>
+      <input id="interrogation-answer" type="text" placeholder="Твой ответ..." />
+      <button id="interrogation-send">Ответить</button>
+      <button id="interrogation-skip">Промолчать</button>
+    </div>
+  </div>
+
+
+  <!-- Журналист -->
+  <input id="journalist-file-input" type="file" accept="image/*" capture="environment" hidden />
+  <dialog id="journalist-photo-modal">
+    <div class="modal-content">
+      <h3 id="journalist-photo-title"></h3>
+      <img id="journalist-photo-img" style="max-width:100%;max-height:70vh;" />
+      <button id="journalist-photo-close">Ок</button>
+    </div>
+  </dialog>
+
+  <!-- Разработчик -->
+  <dialog id="dev-console-modal">
+    <div class="modal-content dev-console">
+      <h3>sudo grep ${{info}} | ${{player}} *.log</h3>
+      <pre id="dev-console-output"></pre>
+      <input id="dev-console-password" type="text" placeholder="password for sudo:" />
+      <button id="dev-console-unlock">Войти</button>
+      <button id="dev-console-close">Закрыть</button>
+    </div>
+  </dialog>
+
+  <dialog id="adviser-notebook">
+    <section class="adviser-paper">
+      <h2>Личное дело</h2>
+      <p class="adviser-paper-stamp">СОВЕРШЕННО МЯТНО</p>
+      <dl id="adviser-report"></dl>
+      <button id="adviser-notebook-close" type="button">
+        Закрыть блокнот
+      </button>
+    </section>
+  </dialog>
+
+  <div id="teacher-two-overlay" hidden>
+    <div class="teacher-two-message">
+      <h1>2</h1>
+      <p>Ваша оценка —</p>
+      <p class="teacher-two-word">ДВА!</p>
+    </div>
+  </div>
+
+  <dialog id="teacher-exam-dialog">
+    <form id="teacher-exam-form">
+      <h2 id="teacher-exam-title">Контрольная</h2>
+      <p id="teacher-exam-timer"></p>
+
+      <div id="teacher-exam-questions"></div>
+
+      <menu>
+        <button type="submit" id="teacher-exam-submit">
+          Сдать работу
+        </button>
+      </menu>
+    </form>
+  </dialog>
+
+
+  <template id="intro-player-template"><div class="intro-player"><canvas width="130" height="130"></canvas><span></span></div></template>
+
+  <dialog id="fix-dialog" class="paper" aria-labelledby="fix-title"><header class="dialog-header"><h2 id="fix-title">FIX</h2><button id="fix-close" type="button">✕</button></header><p>Введи код с панели и нажми красную кнопку.</p><p id="fix-code" class="fix-code"></p><p id="fix-time" class="muted"></p><form id="fix-form"><label class="fix-field">Поломка<select id="fix-crisis"></select></label><label class="fix-field">Код<input id="fix-input" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="off" required></label><p id="fix-error" role="status"></p><button id="fix-confirm" class="fix-red-button" type="submit">FIX</button></form></dialog>
+  <dialog id="intel-dialog" class="paper"><header class="dialog-header"><h2>Полученные сведения</h2><button id="intel-close" type="button">✕</button></header><div id="intel-list" class="list"></div></dialog>
+  <dialog id="notices-dialog" class="paper"><header class="dialog-header"><h2>Личные сообщения</h2><button id="notices-close" type="button">✕</button></header><div id="notices-list" class="list"></div></dialog>
+  <aside id="role-toast" class="paper" role="status" hidden><p id="role-toast-text"></p><button id="role-toast-close" type="button">Понятно</button></aside>
+
+  <template id="task-template"><button type="button" class="task-button"></button></template>
+  <template id="ability-template"><button type="button" class="ability-button"><img alt=""><span class="ability-label"></span><small></small></button></template>
+  <template id="target-template"><button type="button" class="target-button"><span class="target-name"></span><small></small></button></template>
+  <template id="setting-template"><label class="setting"><span></span></label></template>
+</body>
+</html>

@@ -1,0 +1,1393 @@
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px;}.top-actions{display:flex;flex-wrap:wrap;gap:8px;}.game-layout{display:grid;grid-template-columns:minmax(230px,340px) minmax(0,1fr);gap:24px;padding-bottom:170px;}.tasks{display:flex;flex-direction:column;gap:10px;margin-top:16px;}.task-button{width:100%;text-align:left;overflow-wrap:anywhere;}.task-button.completed{text-decoration:line-through;opacity:.6;}.center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:350px;text-align:center;}#role-name{font-size:clamp(25px,5vw,48px);}#state-label{font-size:20px;}
+.abilities{position:fixed;right:22px;bottom:22px;display:flex;align-items:flex-end;justify-content:flex-end;flex-wrap:wrap;gap:14px;max-width:calc(100vw - 44px);padding:12px;z-index:5;border:2px solid var(--line);border-radius:22px 15px 25px 17px;background:#fffef9ed;box-shadow:4px 5px 0 var(--shadow);}.role-abilities{display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;}.ability-button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:96px;min-height:119px;padding:6px;border:0;border-radius:13px;background:transparent;position:relative;}.ability-button:hover:not(:disabled){background:#dfeee2;}.ability-button img{display:block;width:76px;height:76px;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(2px 3px 0 #334e4328);}.ability-button .ability-label{font-size:12px;line-height:1.25;text-align:center;margin-top:4px;}.ability-button small{min-height:15px;font-size:11px;font-weight:bold;}.ability-button.cooling img{filter:grayscale(.7);}#report-button{border-left:2px dashed var(--line);border-radius:0 13px 13px 0;padding-left:12px;width:105px;}
+.alert{padding:12px 16px;border:2px solid #d3a5ad;border-radius:14px;background:var(--pink);}.tablet-off{padding:16px;border:2px dashed #b98787;border-radius:14px;color:#975252;}.target-button{display:flex;justify-content:space-between;gap:12px;text-align:left;}.target-button.unavailable .target-name{text-decoration:line-through;}.setting{display:grid;grid-template-columns:1fr minmax(100px,170px);align-items:center;gap:15px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13px;}.setting input,.setting select{width:100%;min-width:0;padding:8px;border:1px solid var(--line);border-radius:8px;background:white;}#message-text{margin:15px 0 18px;white-space:pre-wrap;line-height:1.6;}.task-progress-panel{padding:14px 18px;margin-bottom:24px;}.task-progress-header{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-size:13px;}.task-progress{display:block;width:100%;height:20px;overflow:hidden;appearance:none;-webkit-appearance:none;border:2px solid var(--line);border-radius:11px 8px 12px 9px;background:#e7eee6;}.task-progress::-webkit-progress-bar{background:#e7eee6;}.task-progress::-webkit-progress-value{background:#8fc9a6;border-radius:7px;}.task-progress::-moz-progress-bar{background:#8fc9a6;border-radius:7px;}#return-lobby-button{background:var(--mint);}
+body.sleep-flash::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    rgb(113 223 155 / 22%) 0%,
+    rgb(74 198 124 / 58%) 65%,
+    rgb(32 130 78 / 88%) 100%
+  );
+  box-shadow: inset 0 0 90px rgb(113 223 155 / 75%);
+  opacity: 0;
+  backdrop-filter: blur(0px);
+  will-change: opacity, transform, backdrop-filter;
+  animation: sleep-flash-effect 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sleep-flash-effect {
+  0% {
+    opacity: 0;
+    transform: scale(1.06);
+    backdrop-filter: blur(0px);
+  }
+
+  20% {
+    opacity: 1;
+    transform: scale(1);
+    backdrop-filter: blur(5px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+    backdrop-filter: blur(0px);
+  }
+}
+
+@media(max-width:650px){.topbar{flex-wrap:wrap;}.game-layout{grid-template-columns:1fr;padding-bottom:150px;}.center{min-height:180px;}.abilities{right:8px;bottom:8px;max-width:calc(100vw - 16px);padding:7px;gap:5px;}.role-abilities{gap:3px;}.ability-button{width:70px;min-height:98px;padding:3px;}.ability-button img{width:56px;height:56px;}#report-button{width:75px;padding-left:7px;}.ability-button .ability-label{font-size:10px;}.setting{grid-template-columns:1fr;gap:6px;}}
+@media(prefers-reduced-motion:reduce){.sleep-flash{animation:none;}}
+#sapper-warning{border-color:#ff5252;background:rgba(255,82,82,.08);}
+#sapper-time{font-family:'Courier New',monospace;font-size:20px;color:#ff5252;letter-spacing:2px;}
+.contract-banner{background:#7a1f1f;color:#fff;padding:8px 12px;border-radius:6px;margin-bottom:8px;font-weight:bold;text-align:center;}
+.contract-list{background:#2b2f33;color:#9adf9a;padding:8px 12px;border-radius:6px;margin-bottom:8px;font-size:13px;}
+/* Иней */
+#frost-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(200,230,255,0.3), transparent 45%),
+    linear-gradient(rgba(180,220,255,0.25), rgba(180,220,255,0.25));
+  backdrop-filter: blur(3px);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#frost-overlay.active { opacity: 1; }
+
+/* Бейдж Ветерана */
+.veteran-badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #ff4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  z-index: 1000;
+}
+.veteran-badge.hidden { display: none; }
+
+/* Панель заметок */
+#tracker-panel {
+  background: rgba(18, 22, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+#tracker-notes-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tracker-note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 3px solid #38bdf8;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #f1f5f9;
+  word-break: break-word;
+}
+
+.tracker-note-num {
+  color: #38bdf8;
+  font-weight: 700;
+  font-size: 11px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.tracker-note-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-style: italic;
+  padding: 10px 0;
+}
+
+.tracker-panel.hidden { display: none; }
+.tracker-panel ul { max-height: 150px; overflow-y: auto; }
+
+/* Модалки */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
+
+.blackjack-dialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 360px;
+  width: calc(100% - 32px);
+  overflow: visible;
+}
+
+.blackjack-dialog::backdrop {
+  background: rgba(20, 26, 22, 0.65);
+  backdrop-filter: blur(3px);
+}
+
+.blackjack-card {
+  background: #f5f5ee;
+  border: 2px solid #8a9486;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 6px 0 #7b8577, 0 14px 28px rgba(0, 0, 0, 0.35);
+  color: #262b24;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blackjack-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blackjack-badge {
+  align-self: flex-start;
+  background: #2f362d;
+  color: #f5f5ee;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.blackjack-header h3 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f241d;
+}
+
+.blackjack-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #5c6658;
+}
+
+.blackjack-select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f241d;
+  background: #ffffff;
+  border: 2px solid #9ba597;
+  border-radius: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.blackjack-select:focus {
+  border-color: #4f5d4b;
+}
+
+.blackjack-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.blackjack-actions button {
+  flex: 1;
+  padding: 11px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.blackjack-actions button:active {
+  transform: translateY(2px);
+}
+
+.btn-blackjack-fire {
+  background: #b9382c;
+  color: #ffffff;
+  border: 2px solid #8c261c;
+  box-shadow: 0 3px 0 #8c261c;
+}
+
+.btn-blackjack-fire:hover {
+  filter: brightness(1.06);
+}
+
+.btn-blackjack-cancel {
+  background: #e4e6dc;
+  color: #2f362d;
+  border: 2px solid #9ba597;
+  box-shadow: 0 3px 0 #9ba597;
+}
+
+.btn-blackjack-cancel:hover {
+  background: #d8dbd0;
+}
+
+/* Настройка самого модального окна <dialog> */
+#dev-console-modal {
+  padding: 0;
+  border: 1px solid #3c3f41;
+  border-radius: 8px;
+  background: #101214; /* Глубокий угольный фон, как в современных терминалах Linux */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+  max-width: 680px;
+  width: 90%;
+  overflow: hidden;
+}
+
+/* Затемнение фона за окном */
+#dev-console-modal::backdrop {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(2px);
+}
+
+/* Основной контейнер терминала */
+.dev-console {
+  background: #101214;
+  color: #e6edf3; /* Базовый светло-серый текст вывода */
+  font-family: 'Ubuntu Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 0 16px 16px 16px;
+  display: flex;
+  flex-wrap: wrap; /* Позволяет аккуратно выстроить кнопки внизу */
+  align-items: center;
+}
+
+/* Превращаем <h3> в системную шапку окна Linux с промптом */
+.dev-console h3 {
+  width: calc(100% + 32px);
+  margin: 0 -16px 14px -16px;
+  padding: 10px 16px;
+  background: #232629; /* Цвет заголовка окна в KDE / GNOME */
+  border-bottom: 1px solid #323639;
+  color: #4af626; /* Классический зеленый цвет команды */
+  font-size: 13px;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+}
+
+/* Добавляем псевдо-кнопки управления окном (свернуть, развернуть, закрыть) */
+.dev-console h3::before {
+  content: "● ● ●";
+  color: #55595c;
+  letter-spacing: 3px;
+  margin-right: 12px;
+  font-size: 12px;
+}
+
+/* Имитация приглашения root@linux:~# перед командой */
+.dev-console h3::after {
+  content: " [bash]";
+  color: #7d8590;
+  margin-left: auto;
+  font-size: 12px;
+}
+
+/* Область вывода логов */
+.dev-console pre {
+  width: 100%;
+  margin: 0 0 12px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #b1bac4;
+  scrollbar-width: thin;
+  scrollbar-color: #3c3f41 #101214;
+}
+
+.dev-console pre::-webkit-scrollbar {
+  width: 6px;
+}
+.dev-console pre::-webkit-scrollbar-track {
+  background: #101214;
+}
+.dev-console pre::-webkit-scrollbar-thumb {
+  background: #3c3f41;
+  border-radius: 3px;
+}
+
+/* Строка ввода пароля в стиле sudo */
+#dev-console-password {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-left: 2px solid #4af626; /* Зеленый акцент активной строки */
+  padding: 4px 0 4px 10px;
+  margin-bottom: 14px;
+  color: #4af626;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+  caret-color: #4af626;
+}
+
+#dev-console-password::placeholder {
+  color: #8b949e;
+}
+
+/* Стилизуем кнопки под консольные команды / шорткаты */
+.dev-console button {
+  background: #1b1f23;
+  color: #4af626;
+  border: 1px solid #30363d;
+  border-radius: 3px;
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dev-console button:hover {
+  background: #262c33;
+  border-color: #4af626;
+}
+
+/* Кнопка "Войти" выглядит как подтверждение [Enter] */
+#dev-console-unlock {
+  margin-right: 10px;
+}
+#dev-console-unlock::before {
+  content: "[↵] ";
+  opacity: 0.7;
+}
+
+/* Кнопка "Закрыть" сдвинута вправо и выглядит как прерывание процесса */
+#dev-console-close {
+  margin-left: auto;
+  color: #ff6b6b;
+}
+#dev-console-close:hover {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+#dev-console-close::before {
+  content: "^C ";
+  opacity: 0.7;
+}
+
+
+/* Затемненный фон для div-модалки */
+#interrogation-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 34, 29, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+/* Класс hidden для скрытия окна */
+#interrogation-modal.hidden {
+  display: none;
+}
+
+/* Карточка допроса в стиле интерфейса игры */
+#interrogation-modal .modal-content {
+  background: #eef5f0;
+  border: 2px solid #9db3a6;
+  border-radius: 18px;
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: #26352d;
+}
+
+/* Текст вопроса */
+#interrogation-question {
+  width: 100%;
+  margin: 0 0 6px 0;
+  font-size: 20px;
+  line-height: 1.4;
+  color: #1e2b24;
+  text-align: center;
+}
+
+/* Поле ввода ответа */
+#interrogation-answer {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #a8bdb1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #1e2b24;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#interrogation-answer:focus {
+  border-color: #4f7a63;
+  box-shadow: 0 0 0 3px rgba(79, 122, 99, 0.15);
+}
+
+/* Общий стиль кнопок */
+#interrogation-modal button {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+
+#interrogation-modal button:active {
+  transform: scale(0.98);
+}
+
+/* Кнопка "Ответить" */
+#interrogation-send {
+  background: #cfe3d6;
+  border: 1.5px solid #7fa38e;
+  color: #1b3326;
+  font-weight: bold;
+}
+
+#interrogation-send:hover {
+  background: #bdd8c7;
+}
+
+/* Кнопка "Промолчать" */
+#interrogation-skip {
+  background: #f5f8f6;
+  border: 1.5px solid #b5c4bc;
+  color: #52635a;
+}
+
+#interrogation-skip:hover {
+  background: #e6ede9;
+  color: #26352d;
+}
+
+
+/* Настройка самого <dialog> */
+#journalist-photo-modal {
+  padding: 0;
+  border: 2px solid #9db3a6;
+  border-radius: 20px;
+  background: #f4f8f5;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  max-width: 480px;
+  width: 92%;
+  overflow: hidden; /* Убирает лишние полосы прокрутки */
+}
+
+#journalist-photo-modal::backdrop {
+  background: rgba(24, 34, 29, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+/* Внутренний контейнер */
+#journalist-photo-modal .modal-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Заголовок ("Ааа опубликовал фото!") */
+#journalist-photo-title {
+  margin: 0;
+  font-size: 20px;
+  color: #1e2b24;
+  text-align: center;
+}
+
+/* Картинка в аккуратной рамке-карточке */
+#journalist-photo-img {
+  display: block;
+  width: 100%;
+  max-height: 62vh !important; /* Перебивает инлайн-стиль, чтобы кнопка точно помещалась */
+  object-fit: contain;
+  background: #ffffff;
+  padding: 8px;
+  border: 1px solid #c5d4cb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Кнопка "Ок" */
+#journalist-photo-close {
+  width: 100%;
+  max-width: 200px;
+  padding: 10px 24px;
+  background: #cfe3d6;
+  border: 1.5px solid #7fa38e;
+  border-radius: 12px;
+  color: #1b3326;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#journalist-photo-close:hover {
+  background: #bdd8c7;
+}
+
+#journalist-photo-close:active {
+  transform: scale(0.98);
+}
+
+#adviser-notebook {
+  width: min(440px, calc(100vw - 28px));
+  padding: 0;
+  border: 1px solid #d5c39c;
+  border-radius: 3px 10px 10px 3px;
+  color: #2b2317;
+  background: #f5e8c8;
+  /* Многослойная тень: объем окна + эффект стопки страниц справа */
+  box-shadow:
+    0 24px 48px rgb(0 0 0 / 50%),
+    0 2px 6px rgb(0 0 0 / 20%),
+    4px 4px 0 -1px #ebe0c2,
+    5px 5px 0 -1px #cbb994,
+    8px 8px 0 -2px #e0d3b2,
+    9px 9px 0 -2px #bba882;
+  overflow: visible;
+}
+
+#adviser-notebook::backdrop {
+  background: rgb(18 14 10 / 68%);
+  backdrop-filter: blur(3px);
+}
+
+.adviser-paper {
+  position: relative;
+  min-height: 320px;
+  padding: 30px 28px 30px 54px;
+  border-radius: inherit;
+  line-height: 30px; /* Жестко привязываем ритм текста к шагу линий (30px) */
+  font-family: Georgia, "Times New Roman", serif;
+  /* Текстура: легкое виньетирование краев + красное поле + горизонтальная разлиновка */
+  background:
+    radial-gradient(circle at center, transparent 55%, rgb(138 112 68 / 14%) 100%),
+    linear-gradient(
+      90deg,
+      transparent 38px,
+      rgb(193 110 110 / 75%) 39px,
+      rgb(193 110 110 / 75%) 40px,
+      transparent 41px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      #f5e8c8 0 29px,
+      rgb(168 164 142 / 65%) 29px 30px
+    );
+  /* Легкое внутреннее свечение края листа */
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 45%);
+}
+
+/* Отверстия от перфорации на левом поле */
+.adviser-paper::before {
+  content: "";
+  position: absolute;
+  top: 44px;
+  left: 14px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2c251d;
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / 65%),
+    0 110px 0 #2c251d,
+    inset 0 112px 3px rgb(0 0 0 / 65%),
+    0 220px 0 #2c251d,
+    inset 0 222px 3px rgb(0 0 0 / 65%);
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.adviser-paper h2 {
+  margin: 0 0 24px;
+  padding-bottom: 5px;
+  font-size: 1.35rem;
+  line-height: 30px;
+  letter-spacing: 0.3px;
+  color: #1f180e;
+  border-bottom: 2px solid rgb(48 40 27 / 22%);
+}
+
+.adviser-paper-stamp {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  color: #3b6e3e;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+  opacity: 0.88;
+  /* Эффект впитавшихся в бумагу чернил */
+  mix-blend-mode: multiply;
+  box-shadow: inset 0 0 4px rgb(59 110 62 / 25%);
+}
+
+#adviser-report {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 14px; /* Нулевой вертикальный отступ сохраняет попадание в строки */
+  margin: 30px 0;
+}
+
+#adviser-report dt {
+  font-weight: 700;
+  color: #4f412b;
+}
+
+#adviser-report dd {
+  margin: 0;
+  color: #1e1810;
+  overflow-wrap: anywhere;
+}
+
+/* Принудительное скрытие неактивных оверлеев и плашек */
+#blackmail-warning[hidden],
+#santa-snow-overlay[hidden],
+#santa-gift-status[hidden],
+#santa-lists[hidden] {
+  display: none !important;
+}
+
+/* Предупреждение о шантаже (Blackmailer) */
+#blackmail-warning {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+
+  width: min(520px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 16px 22px;
+
+  border: 2px solid #f25f5c;
+  border-radius: 12px;
+
+  color: #fff5f5;
+  background: linear-gradient(135deg, rgba(64, 22, 32, 0.96) 0%, rgba(38, 12, 19, 0.96) 100%);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(242, 95, 92, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  text-align: center;
+  pointer-events: none;
+
+  animation:
+    blackmail-drop-in 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    blackmail-pulse 2.4s ease-in-out infinite;
+}
+
+#blackmail-warning strong,
+#blackmail-warning span {
+  display: block;
+}
+
+/* Заголовок предупреждения */
+#blackmail-warning strong {
+  margin-bottom: 6px;
+  color: #ff8a8a;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 8px rgba(242, 95, 92, 0.45);
+}
+
+/* Основной текст предупреждения */
+#blackmail-warning span {
+  color: #f8e5e8;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* Плавный выезд сверху при появлении */
+@keyframes blackmail-drop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Мягкое тревожное свечение рамки */
+@keyframes blackmail-pulse {
+  0%, 100% {
+    border-color: #f25f5c;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.55),
+      0 0 16px rgba(242, 95, 92, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  50% {
+    border-color: #ff9e9e;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(242, 95, 92, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+
+/* Полноэкранный оверлей снегопада / заморозки */
+#santa-snow-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+
+  display: grid;
+  place-items: center;
+  padding: 20px;
+
+  color: #163246;
+  backdrop-filter: blur(4px);
+
+  /* Морозная виньетка по краям экрана */
+  box-shadow: inset 0 0 90px rgba(135, 198, 235, 0.75);
+
+  /* 4 слоя снежинок разного размера и прозрачности + ледяной фон */
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.95) 0 4px, transparent 5px),
+    radial-gradient(circle at 74% 35%, rgba(255, 255, 255, 0.85) 0 6px, transparent 7.5px),
+    radial-gradient(circle at 35% 72%, rgba(255, 255, 255, 0.7) 0 3px, transparent 4px),
+    radial-gradient(circle at 84% 82%, rgba(255, 255, 255, 0.9) 0 5px, transparent 6.5px),
+    linear-gradient(180deg, rgba(214, 238, 252, 0.88) 0%, rgba(235, 247, 255, 0.94) 100%);
+
+  background-size:
+    110px 130px,
+    180px 160px,
+    150px 170px,
+    210px 190px,
+    100% 100%;
+
+  /* Плавное падение снега и мягкое появление самого оверлея */
+  animation:
+    santa-overlay-fade 0.3s ease-out,
+    santa-snow-fall 7s linear infinite;
+}
+
+/* Центральная карточка с сообщением */
+.santa-snow-message {
+  max-width: min(420px, calc(100vw - 40px));
+  padding: 24px 28px;
+
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(240, 249, 255, 0.94) 100%);
+  box-shadow:
+    0 16px 36px rgba(22, 50, 70, 0.22),
+    0 0 24px rgba(255, 255, 255, 0.8);
+
+  color: #163246;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+
+  animation: santa-message-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Анимация непрерывного падения снежинок (кратна размерам background-size для бесшовности) */
+@keyframes santa-snow-fall {
+  0% {
+    background-position:
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      110px 260px,
+      -180px 320px,
+      150px 340px,
+      -210px 380px,
+      0 0;
+  }
+}
+
+@keyframes santa-overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes santa-message-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+/* Всплывающее уведомление о статусе подарка */
+#santa-gift-status {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 8000;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(340px, calc(100vw - 32px));
+
+  padding: 10px 16px;
+  border: 1px solid rgba(131, 223, 171, 0.65);
+  border-left: 4px solid #83dfab;
+  border-radius: 10px;
+
+  color: #eaffef;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  background: linear-gradient(135deg, rgba(24, 63, 44, 0.96) 0%, rgba(16, 44, 30, 0.96) 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 12px rgba(131, 223, 171, 0.15);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Контейнер со списками Санты */
+#santa-lists {
+  padding: 16px;
+  border: 1px solid rgba(81, 124, 97, 0.75);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(26, 57, 40, 0.35) 0%, rgba(18, 40, 28, 0.45) 100%);
+  box-shadow: inset 0 1px 0 rgba(131, 223, 171, 0.12), 0 4px 16px rgba(0, 0, 0, 0.25);
+  color: #e2f5ea;
+}
+
+/* Сброс стандартных маркеров списка и аккуратные отступы */
+#santa-lists ul,
+#santa-lists ol {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Карточка каждого игрока в списке */
+#santa-lists li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(131, 223, 171, 0.14);
+  background: rgba(15, 32, 23, 0.55);
+  font-size: 14px;
+  transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+}
+
+#santa-lists li:last-child {
+  margin-bottom: 0;
+}
+
+/* Индикатор активной цели (зеленая точка слева) */
+#santa-lists li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #83dfab;
+  box-shadow: 0 0 6px rgba(131, 223, 171, 0.6);
+}
+
+/* Выполненная цель */
+#santa-lists li.santa-done {
+  opacity: 0.55;
+  border-color: rgba(81, 124, 97, 0.2);
+  background: rgba(12, 24, 18, 0.35);
+  text-decoration: line-through;
+  text-decoration-color: #83dfab;
+}
+
+/* Галочка вместо точки у выполненной цели */
+#santa-lists li.santa-done::before {
+  content: "✓";
+  width: auto;
+  height: auto;
+  background: none;
+  box-shadow: none;
+  color: #83dfab;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   1. Оверлей (красная оценка на тетрадном листе)
+   ========================================= */
+#teacher-two-overlay[hidden],
+#teacher-exam-dialog[open] ~ #teacher-two-overlay {
+  display: none;
+}
+
+#teacher-two-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  color: #b71c1c; /* Цвет красных учительских чернил */
+  background-color: #fdfbf7;
+  /* Тетрадная клетка + красная вертикальная линия полей слева */
+  background-image:
+    linear-gradient(90deg, transparent 58px, rgba(229, 57, 53, 0.35) 58px, rgba(229, 57, 53, 0.35) 60px, transparent 60px),
+    linear-gradient(rgba(100, 149, 237, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 149, 237, 0.16) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+.teacher-two-message {
+  max-width: 100%;
+  padding: 24px 40px;
+  text-align: center;
+  /* Эффект живой рукописной пометки / штампа под наклоном */
+  transform: rotate(-3deg);
+  user-select: none;
+}
+
+.teacher-two-message h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(120px, 30vw, 260px);
+  line-height: 0.9;
+  text-shadow: 2px 3px 0 rgba(183, 28, 28, 0.15);
+}
+
+.teacher-two-message p {
+  display: inline-block;
+  margin: 16px 0 0;
+  padding: 6px 20px;
+  border: 3px solid #b71c1c;
+  border-radius: 6px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(20px, 5vw, 34px);
+}
+
+.teacher-two-word {
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* =========================================
+   2. Диалоговое окно (экзаменационный бланк)
+   ========================================= */
+#teacher-exam-dialog {
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(86dvh, 900px);
+  padding: 0;
+  border: 1px solid #d7cfc1;
+  border-top: 6px solid #2b3a4a; /* Строгая шапка официального бланка */
+  border-radius: 3px; /* Острые бумажные углы */
+  color: #1f2428;
+  background-color: #fcfaf5; /* Теплый оттенок плотной бумаги */
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.12),
+    0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+#teacher-exam-dialog::backdrop {
+  background: rgba(20, 24, 28, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+#teacher-exam-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: inherit;
+  padding: 24px 28px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Тонкая разметка в линейку на фоне формы */
+  background-image: linear-gradient(rgba(120, 144, 156, 0.12) 1px, transparent 1px);
+  background-size: 100% 28px;
+}
+
+#teacher-exam-questions {
+  display: grid;
+  gap: 16px;
+}
+
+/* =========================================
+   3. Карточки заданий и поля вписывания
+   ========================================= */
+.exam-question {
+  padding: 16px 18px;
+  border: 1px solid #c5cdd4;
+  border-left: 4px solid #3949ab; /* Акцент синей шариковой ручки */
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.exam-question h3 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cfd8dc; /* Пунктирная отрывная/разделительная линия */
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  color: #102027;
+}
+
+.exam-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  margin: 4px 0;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.exam-choice:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+
+.exam-choice input[type="radio"],
+.exam-choice input[type="checkbox"] {
+  accent-color: #1565c0; /* Цвет синих чернил */
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Поле ввода в виде строчки для вписывания ответа от руки */
+.exam-text-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 6px 6px;
+  border: none;
+  border-bottom: 2px solid #546e7a; /* Нижнее подчеркивание вместо рамки */
+  border-radius: 2px 2px 0 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0d47a1; /* Введенный текст выглядит как запись синей ручкой */
+  background-color: rgba(236, 239, 241, 0.45);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.exam-text-input:hover {
+  background-color: rgba(236, 239, 241, 0.8);
+}
+
+.exam-text-input:focus {
+  outline: none;
+  border-bottom-color: #1565c0;
+  background-color: rgba(227, 242, 253, 0.55);
+}
+
+.double-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* Защита от растягивания длинным текстом */
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.double-shot-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.double-shot-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8b9bb4;
+}
+
+.double-shot-select {
+  appearance: none; /* Убираем стандартную системную стрелку */
+  width: 100%;
+  padding: 10px 32px 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #2c3846;
+  background-color: #12171d;
+  color: #f0f4f8;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+  /* Аккуратная кастомная стрелка справа */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://w3.org' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b9bb4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.double-shot-select:hover {
+  border-color: #4a5d73;
+  background-color: #171e26;
+}
+
+.double-shot-select:focus {
+  outline: none;
+  border-color: #e63946;
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
+}
+
+.double-shot-fire {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #e63946 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.double-shot-fire:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 16px rgba(230, 57, 70, 0.4);
+  transform: translateY(-1px);
+}
+
+.double-shot-fire:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(230, 57, 70, 0.3);
+}
+
+/* Состояние, когда цель или роль ещё не выбраны */
+.double-shot-fire:disabled {
+  background: #232b35;
+  color: #64748b;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Адаптация для узких экранов (телефонов) */
+@media (max-width: 480px) {
+  .double-shot-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+/* Модальное окно информации о модификаторе */
+.modifier-info-modal {
+  box-sizing: border-box;
+  width: min(480px, 92vw);
+  max-width: 480px;
+  padding: 20px;
+
+  border: 1px solid #2b3847;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #151b22 0%, #0f1318 100%);
+  color: #f1f5f9;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  animation: modifier-modal-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Затемнение фона за модалкой (работает автоматически для HTML-тега <dialog>) */
+.modifier-info-modal::backdrop {
+  background: rgba(6, 9, 13, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+/* Шапка окна */
+.modifier-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Удобная кнопка закрытия под палец на телефоне */
+.modifier-info-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.modifier-info-close:hover {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
+}
+
+.modifier-info-close:active {
+  transform: scale(0.95);
+}
+
+/* Прокручиваемая область со списками и логами */
+.modifier-info-body {
+  margin-top: 14px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Аккуратный тонкий скроллбар */
+.modifier-info-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modifier-info-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modifier-info-body::-webkit-scrollbar-thumb {
+  background: #2c3948;
+  border-radius: 999px;
+}
+
+/* Строки статусов игроков и логов */
+.modifier-status-row,
+.modifier-log-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  background: #19222d;
+  font-size: 14px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.modifier-status-row:last-child,
+.modifier-log-row:last-child {
+  margin-bottom: 0;
+}
+
+.modifier-status-row:hover,
+.modifier-log-row:hover {
+  background: #1f2a37;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Цвета статусов с лёгким свечением */
+.status-ok {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.status-slep {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.status-exd {
+  color: #facc15;
+  font-weight: 600;
+}
+
+.status-dc {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@keyframes modifier-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+

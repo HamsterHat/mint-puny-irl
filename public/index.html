@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Пуня · Лобби</title>
+
+  <style>
+    :root {
+      --bg: #edf5ef;
+      --paper: #fffef9;
+      --mint: #c5e9d5;
+      --mint-dark: #8ebda5;
+      --ink: #344e43;
+      --muted: #718578;
+      --pink: #f4dce4;
+      --lavender: #e4def4;
+      --yellow: #f7ebc4;
+      --line: #aac7b3;
+      --shadow: #d2e2d6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px;
+      color: var(--ink);
+      font-family: "Segoe Print", "Comic Sans MS", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, #dbefe4, transparent 40%),
+        radial-gradient(circle at 90% 90%, #ece5f3, transparent 40%),
+        var(--bg);
+    }
+
+    button,
+    input {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: 2px solid var(--line);
+      border-radius: 13px 10px 15px 9px;
+      background: var(--paper);
+      cursor: pointer;
+      transition: background .15s, transform .15s;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--mint);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(2px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #679f85;
+      outline-offset: 3px;
+    }
+
+    input {
+      min-width: 0;
+      padding: 11px 13px;
+      border: 2px solid var(--line);
+      border-radius: 12px 9px 14px 10px;
+      background: #fff;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    .paper {
+      border: 2px solid var(--mint-dark);
+      border-radius: 21px 15px 25px 17px;
+      background: var(--paper);
+      box-shadow: 5px 6px 0 var(--shadow);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty-note {
+      grid-column: 1 / -1;
+      padding: 20px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .icon-button,
+    .category-button,
+    .price-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    /* Авторизация */
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: var(--bg);
+    }
+
+    .auth-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: min(350px, 100%);
+      padding: 26px;
+    }
+
+    .auth-box h1 {
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 25px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 13px;
+    }
+
+    #btn-login {
+      background: var(--mint);
+    }
+
+    #btn-reg {
+      background: var(--pink);
+    }
+
+    /* Основная сетка */
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      align-items: start;
+      gap: 28px;
+      width: min(1400px, 100%);
+      margin: 0 auto;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .social {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 590px;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .social-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    [aria-pressed="true"] {
+      background: var(--mint);
+      border-color: #7ca78e;
+    }
+
+    .social-panel {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    #lobby-players {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .player-slot {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border: 2px solid var(--line);
+      border-radius: 13px 9px 15px 10px;
+      background: #f1f7f2;
+    }
+
+    .player-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .player-slot canvas {
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--mint);
+    }
+
+    .lobby-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #btn-start {
+      flex: 1;
+      background: var(--mint);
+    }
+
+    .player-counter {
+      white-space: nowrap;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Чат */
+
+    #chat-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #chat-messages {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .chat-message {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px 8px 14px 9px;
+      background: #f2f8f3;
+    }
+
+    .chat-message.mine {
+      background: #e2f1e6;
+    }
+
+    .chat-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .chat-author {
+      font-size: 12px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-time {
+      flex-shrink: 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .chat-text {
+      font-size: 13px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    /* Кастомизация */
+
+    .customization {
+      min-width: 0;
+      min-height: 660px;
+      padding: 24px;
+    }
+
+    .customization-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .customization h1 {
+      font-size: clamp(21px, 2.5vw, 29px);
+    }
+
+    .wallet {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .currency {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid #ddcf9e;
+      border-radius: 12px 8px 14px 9px;
+      background: var(--yellow);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .currency.crystals {
+      border-color: #c9bdde;
+      background: var(--lavender);
+    }
+
+    #btn-shop {
+      background: var(--pink);
+    }
+
+    .preview-area {
+      display: flex;
+      justify-content: center;
+      margin: 22px 0 26px;
+      text-align: center;
+    }
+
+    #my-canvas {
+      display: block;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 8px;
+      border: 2px solid var(--line);
+      border-radius: 22px 15px 25px 16px;
+      background:
+        radial-gradient(ellipse at bottom, #d8ecdd, transparent 65%),
+        #f3faf4;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+    }
+
+    .category-tabs,
+    .shop-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .category-tabs {
+      padding: 10px;
+      border: 2px solid var(--line);
+      border-radius: 15px 10px 17px 11px;
+      background: #eff6ef;
+    }
+
+    .category-button {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    .items-panel {
+      min-height: 220px;
+      padding-top: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      min-height: 75px;
+      padding: 12px 8px;
+      border-radius: 14px 10px 17px 9px;
+      font-size: 12px;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .card.equipped {
+      border-color: #6a9f81;
+      background: #dceee1;
+    }
+
+    /* Магазин и инвентарь */
+
+    .item-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      padding: 14px 10px;
+      border: 2px solid var(--line);
+      border-radius: 15px 10px 17px 11px;
+      background: #f4f9f1;
+      text-align: center;
+    }
+
+    .item-card:nth-child(even) {
+      background: #faf0f4;
+    }
+
+    .item-preview {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .item-name {
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: 100%;
+      margin-top: auto;
+    }
+
+    .price-button {
+      width: 100%;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .price-button .icon {
+      width: 19px;
+      height: 19px;
+    }
+
+    /* Диалоги */
+
+    dialog {
+      max-height: calc(100dvh - 40px);
+      margin: auto;
+      padding: 24px;
+      overflow-y: auto;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    dialog::backdrop {
+      background: rgb(52 78 67 / 45%);
+    }
+
+    #shop-dialog {
+      width: min(820px, calc(100vw - 32px));
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .shop-tabs {
+      margin-bottom: 20px;
+    }
+
+    #message-dialog {
+      width: min(400px, calc(100vw - 32px));
+      text-align: center;
+    }
+
+    #message-title {
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+
+    #message-text {
+      margin-bottom: 20px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #message-close {
+      background: var(--mint);
+    }
+
+    @media (max-width: 950px) {
+      body {
+        padding: 16px;
+      }
+
+      .layout {
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .customization {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .social {
+        height: 390px;
+      }
+
+      .customization {
+        min-height: auto;
+      }
+
+      .customization-header {
+        flex-wrap: wrap;
+      }
+
+      .wallet {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
+
+    .cosmetic-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 110px;
+      padding: 12px 8px;
+    }
+
+    .cosmetic-preview {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .cosmetic-name {
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .system-message {
+      margin: 0;
+      padding: 2px 0;
+      color: #bf4848;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .player-heading {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .host-crown {
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+
+    .player-moderation {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 7px;
+    }
+
+    .player-moderation button {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+
+    .kick-button {
+      background: var(--yellow);
+    }
+
+    .ban-button {
+      background: var(--pink);
+    }
+  </style>
+  <link rel="stylesheet" href="/rpoints-ui.css">
+
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="/rpoints-ui.js" defer></script>
+  <script src="/client.js" defer></script>
+  <script src="/wiki-bridge.js" defer></script>
+</head>
+
+<body>
+  <!-- Авторизация -->
+  <section id="auth-screen" class="auth-screen">
+    <form id="auth-form" class="auth-box paper">
+      <h1>Аккаунт Пуни</h1>
+
+      <label class="field">
+        Никнейм
+        <input
+          id="username-in"
+          name="username"
+          autocomplete="username"
+          maxlength="24"
+          required
+        >
+      </label>
+
+      <label class="field">
+        Пароль
+        <input
+          id="password-in"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          maxlength="128"
+          required
+        >
+      </label>
+
+      <button id="btn-login" type="submit">Войти</button>
+      <button id="btn-reg" type="button">Создать аккаунт</button>
+    </form>
+  </section>
+
+  <!-- Лобби -->
+  <main id="app" class="layout" hidden>
+    <aside class="sidebar">
+      <section class="social paper">
+        <nav class="social-tabs" aria-label="Общение и игроки">
+          <button
+            type="button"
+            data-social="players-panel"
+            aria-controls="players-panel"
+            aria-pressed="true"
+          >
+            Игроки
+          </button>
+
+          <button
+            type="button"
+            data-social="chat-panel"
+            aria-controls="chat-panel"
+            aria-pressed="false"
+          >
+            Чат
+          </button>
+        </nav>
+
+        <section id="players-panel" class="social-panel">
+          <div id="lobby-players"></div>
+        </section>
+
+        <section id="chat-panel" class="social-panel" hidden>
+          <div id="chat-messages" role="log" aria-live="polite"></div>
+
+          <form
+              id="chat-form"
+              class="chat-form"
+              onsubmit="return false;"
+            >
+            <input
+              id="chat-input"
+              placeholder="Сообщение…"
+              aria-label="Сообщение"
+              maxlength="300"
+              autocomplete="off"
+              disabled
+            >
+
+            <button
+              id="btn-send"
+              type="submit"
+              aria-label="Отправить сообщение"
+              disabled
+            >
+              ➜
+            </button>
+          </form>
+        </section>
+      </section>
+
+      <footer class="lobby-footer">
+        <button
+          id="btn-start"
+          type="button"
+          title="Начать игру"
+          disabled
+        >
+          Начать игру
+        </button>
+
+        <span class="player-counter">
+          <span id="players-count">0</span>/50
+        </span>
+      </footer>
+    </aside>
+
+    <section class="customization paper">
+      <header class="customization-header">
+        <div>
+          <p class="muted">Подготовка к игре</p>
+          <h1>Кастомизация</h1>
+          <p id="connection-status" class="muted" aria-live="polite">
+            Подключение…
+          </p>
+        </div>
+
+        <div class="wallet">
+          <div class="currency">
+            <img class="icon" src="/assets/ui/coin.png" alt="">
+            <span id="user-balance">0</span>
+            <span>коинов</span>
+          </div>
+
+          <div class="currency crystals">
+            <img class="icon" src="/assets/ui/punium.png" alt="">
+            <span id="user-punium">0</span>
+            <span>пуниума</span>
+          </div>
+
+          <button id="btn-shop" class="icon-button" type="button">
+            <img class="icon" src="/assets/ui/shop.png" alt="">
+            Магазин
+          </button>
+        </div>
+      </header>
+
+      <div class="preview-area">
+        <div>
+          <canvas id="my-canvas" width="160" height="160"></canvas>
+          <div id="player-nick">Пуня</div>
+        </div>
+      </div>
+
+      <nav class="category-tabs" aria-label="Категории инвентаря">
+        <button
+          class="category-button"
+          type="button"
+          data-category="colors"
+          aria-pressed="true"
+        >
+          <img class="icon" src="/assets/ui/tabs/colors.png" alt="">
+          Цвета
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="faces"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/faces.png" alt="">
+          Лица
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="hats"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/hats.png" alt="">
+          Шляпки
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="glasses"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/glasses.png" alt="">
+          Очки
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="badges"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/badges.png" alt="">
+          Бейджи
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="pets"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/pets.png" alt="">
+          Питомцы
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="rolepoints"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/rolepoints.png" alt="">
+          Ролепоинты
+        </button>
+
+        <button
+          class="category-button"
+          type="button"
+          data-category="chests"
+          aria-pressed="false"
+        >
+          <img class="icon" src="/assets/ui/tabs/chests.png" alt="">
+          Сундуки
+        </button>
+      </nav>
+
+      <section class="items-panel" data-panel="colors">
+        <div id="inventory-colors" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="faces" hidden>
+        <div id="inventory-faces" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="hats" hidden>
+        <div id="inventory-hats" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="glasses" hidden>
+        <div id="inventory-glasses" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="badges" hidden>
+        <div id="inventory-badges" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="pets" hidden>
+        <div id="inventory-pets" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="rolepoints" hidden>
+        <div id="inventory-rolepoints" class="grid"></div>
+      </section>
+
+      <section class="items-panel" data-panel="chests" hidden>
+        <div id="inventory-chests" class="grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Магазин -->
+  <dialog id="shop-dialog" class="paper" aria-labelledby="shop-title">
+    <header class="dialog-header">
+      <div>
+        <p class="muted">Обновки для Пуни</p>
+        <h2 id="shop-title">Магазин</h2>
+      </div>
+
+      <button id="shop-close" type="button" aria-label="Закрыть магазин">
+        ✕
+      </button>
+    </header>
+
+    <nav class="shop-tabs" aria-label="Категории магазина">
+      <button class="category-button" type="button"
+              data-shop-category="colors" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/colors.png" alt="">
+        Цвета
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="faces" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/faces.png" alt="">
+        Лица
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="hats" aria-pressed="true">
+        <img class="icon" src="/assets/ui/tabs/hats.png" alt="">
+        Шляпки
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="glasses" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/glasses.png" alt="">
+        Очки
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="badges" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/badges.png" alt="">
+        Бейджи
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="pets" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/pets.png" alt="">
+        Питомцы
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="rolepoints" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/rolepoints.png" alt="">
+        Ролепоинты
+      </button>
+
+      <button class="category-button" type="button"
+              data-shop-category="chests" aria-pressed="false">
+        <img class="icon" src="/assets/ui/tabs/chests.png" alt="">
+        Сундуки
+      </button>
+    </nav>
+
+    <div id="store-items" class="grid"></div>
+  </dialog>
+
+  <!-- Сообщения и результаты открытия -->
+  <dialog
+    id="message-dialog"
+    class="paper"
+    aria-labelledby="message-title"
+    aria-describedby="message-text"
+  >
+    <h2 id="message-title"></h2>
+    <p id="message-text"></p>
+    <button id="message-close" type="button" autofocus>Понятно</button>
+  </dialog>
+
+  <!-- Шаблоны динамических элементов -->
+
+  <template id="cosmetic-template">
+    <button type="button" class="card cosmetic-card">
+      <img class="cosmetic-preview" alt="" loading="lazy">
+      <span class="cosmetic-name"></span>
+    </button>
+  </template> 
+
+  <template id="item-template">
+    <article class="item-card">
+      <img class="item-preview" alt="" loading="lazy">
+      <div class="item-name"></div>
+      <small class="item-count muted"></small>
+      <div class="item-actions"></div>
+    </article>
+  </template>
+
+  <template id="price-template">
+    <button type="button" class="price-button">
+      <img class="icon" alt="">
+      <span></span>
+    </button>
+  </template>
+
+  <template id="player-template">
+    <div class="player-slot">
+      <canvas width="100" height="100"></canvas>
+
+      <div class="player-info">
+        <div class="player-heading">
+          <span class="player-name"></span>
+          <span class="host-crown" title="Хост" aria-label="Хост" hidden>
+            👑
+          </span>
+        </div>
+
+        <div class="player-moderation" hidden>
+          <button class="kick-button" type="button">Kick</button>
+          <button class="ban-button" type="button">Ban</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="chat-template">
+    <article class="chat-message">
+      <div class="chat-meta">
+        <span class="chat-author"></span>
+        <time class="chat-time"></time>
+      </div>
+      <div class="chat-text"></div>
+    </article>
+  </template>
+
+  <template id="system-template">
+    <p class="system-message"></p>
+  </template>
+
+  <template id="empty-template">
+    <p class="empty-note"></p>
+  </template>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Пуня · Внутренний экран</title>
+  <link rel="stylesheet" href="/meeting.css">
+  <style>
+    body{display:grid;place-items:center;}.internal-panel{width:min(650px,100%);text-align:center;}#status{min-height:30px;margin-bottom:18px;white-space:pre-wrap;}#sound-button{margin-bottom:20px;}#emergency-button{width:220px;height:220px;border:8px solid #b47878;border-radius:50%;background:#e69c9c;font-size:25px;font-weight:bold;box-shadow:0 10px 0 #b47878;}#emergency-button:active:not(:disabled){transform:translateY(7px);box-shadow:0 3px 0 #b47878;}#switches{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}.switch{min-height:90px;background:#f0d0d0;}.switch.on{background:#bfe3c9;}#missile-timer{margin:14px 0;font-size:20px;}#login-link{display:inline-block;margin-top:18px;color:var(--ink);}#emergency-meta{margin-top:16px;font-size:13px;}
+  </style>
+  <script src="/socket.io/socket.io.js" defer></script><script src="/game-audio.js" defer></script><script src="/meeting-ui.js" defer></script><script src="/internal.js" defer></script>
+</head><body>
+  <main class="internal-panel paper"><button id="sound-button" type="button" aria-pressed="true">🔊 Звук</button><p id="status" role="status">Подключение…</p>
+    <section id="emergency-screen" hidden><button id="emergency-button" type="button" disabled>EMERGENCY</button><p id="emergency-meta"></p><p id="crisis-warning" hidden>EMERGENCY MEETING CANNOT BE CALLED DURING CRISIS</p></section>
+    <section id="missile-screen" hidden><h1>Ракетный электрощит</h1><p id="missile-timer"></p><p>Переведи все переключатели в зелёное положение.</p><div id="switches"></div></section><a id="login-link" href="/" hidden>Перейти ко входу</a>
+  </main>
+
+  <dialog id="meeting-dialog" class="paper" aria-labelledby="meeting-title">
+    <header class="meeting-header"><h2 id="meeting-title">EMERGENCY MEETING</h2><p id="meeting-time"></p><p id="meeting-vote-status"></p><p id="meeting-error" role="status"></p></header>
+    <section class="meeting-action-panel" hidden><h3>Твои способности на собрании</h3><div id="meeting-actions" class="meeting-actions"></div></section>
+    <div id="meeting-players" class="meeting-grid"></div>
+    <footer class="meeting-footer"><button id="meeting-skip" type="button">Skip</button></footer>
+  </dialog>
+  <div id="ejection-overlay" role="status" hidden>
+    <h2 id="ejection-title"></h2><div class="ejection-scene"><div class="pond"></div><canvas id="ejection-player" width="160" height="160"></canvas></div>
+    <section class="meeting-action-panel" hidden><div id="ejection-actions" class="meeting-actions"></div></section>
+  </div>
+  <div id="termination-overlay" role="status" hidden><h1>&lt;MEETING TERMINATED&gt;</h1></div>
+  <template id="meeting-player-template"><article class="meeting-player"><button class="meeting-select" type="button"><canvas width="100" height="100"></canvas><span class="meeting-name"></span></button><div class="meeting-confirm" hidden><button class="vote-yes" type="button" aria-label="Подтвердить голос">✓</button><button class="vote-no" type="button" aria-label="Отменить выбор">✕</button></div></article></template>
+  <template id="meeting-action-template"><button class="meeting-ability" type="button"><img alt=""><span></span><small></small></button></template>
+</body></html>

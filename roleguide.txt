@@ -1,0 +1,475 @@
+1. Из чего состоит роль
+Роль — класс в game/Game.js, объявленный до класса Game.
+
+Минимальный пример:
+
+js
+export class ExampleRole extends InnocentRole {
+  static id = 'example-role';
+  static displayName = 'Example Role';
+  static description = 'Your starting message.';
+}
+Поля:
+
+Поле	Назначение
+static id	Уникальный технический ID
+static displayName	Название роли
+static description	Сообщение при старте раунда
+team	Команда
+fakeTasks	Настоящие или фальшивые задания
+abilities	Описание кнопок способностей
+use()	Серверная логика применения
+extends позволяет наследовать поведение другой роли, а super — обращаться к реализации родителя.
+
+Какого родителя выбирать
+js
+extends InnocentRole
+Мирный: команда innocent, настоящие задания.
+
+js
+extends AttackerRole
+Мятный: команда mint, фальшивые задания. Обычное усыпление и поломки этот класс сам не добавляет.
+
+js
+extends MintPuny
+Полноценный обычный мятный: уже есть усыпление и поломки. Именно так сейчас сделан MintCook.
+
+js
+extends Role
+Основа для нейтралов и нестандартных ролей. Команду и задания задаёшь самостоятельно:
+
+js
+export class ExampleNeutral extends Role {
+  static id = 'example-neutral';
+  static displayName = 'Example Neutral';
+
+  get team() {
+    return 'neutral';
+  }
+
+  get fakeTasks() {
+    return true;
+  }
+}
+Условия победы нейтрала при этом автоматически не появляются — их нужно отдельно реализовать.
+
+2. Добавляем класс новой роли
+В game/Game.js, после MintCook и до RolesPool, добавь:
+
+js
+export class MintGunner extends MintPuny {
+  static id = 'mint-gunner';
+  static displayName = 'Mint Gunner';
+  static description = 'Make every shot count.';
+
+  constructor(player) {
+    super(player);
+
+    this.ammo = this.game.settings.gunnerAmmo;
+  }
+
+  get abilities() {
+    return [
+      ...super.abilities,
+
+      {
+        id: 'gunner-shot',
+        name: `Выстрел · ${this.ammo}`,
+        targets: true,
+        disabled: this.ammo <= 0
+      }
+    ];
+  }
+
+  use(id, target, now) {
+    // Обычное усыпление и поломки обрабатывает MintPuny.
+    if (id !== 'gunner-shot') {
+      return super.use(id, target, now);
+    }
+
+    const attacker = this.player;
+    const settings = this.game.settings;
+
+    check(this.ammo > 0, 'Патроны закончились.');
+
+    this.game.assertTarget(attacker, target);
+    attacker.requireReady('gunner-shot', now);
+
+    this.ammo--;
+
+    Player.lull(attacker, target);
+
+    attacker.cooldown(
+      'gunner-shot',
+      settings.gunnerCooldown,
+      now
+    );
+  }
+}
+Если у наследника есть собственный конструктор, super(player) нужно вызвать до обращения к this.
+
+Что происходит при выстреле
+Общий обработчик матча проверяет состояние стрелка, фазу игры и доступность планшета.
+
+Роль проверяет патроны.
+
+Проверяется цель.
+
+Проверяется перезарядка.
+
+Расходуется патрон.
+
+Выполняется усыпление.
+
+Запускается новый КД.
+
+Все проверки, которые могут отклонить действие, старайся выполнять до расходования ресурсов.
+
+Что означает описание кнопки
+js
+{
+  id: 'gunner-shot',
+  name: `Выстрел · ${this.ammo}`,
+  targets: true,
+  disabled: this.ammo <= 0
+}
+id передаётся серверу как имя способности.
+
+name отображается под спрайтом.
+
+targets: true открывает список игроков.
+
+disabled отключает кнопку на клиенте.
+
+Но disabled — только интерфейс. Поэтому серверная проверка патронов всё равно обязательна.
+
+3. Добавляем настройки хоста
+В массив settingsSchema файла game/settings.js добавь:
+
+js
+{
+  id: 'mintGunners',
+  label: 'Количество Mint Gunner',
+  type: 'number',
+  min: 0,
+  max: 15,
+  step: 1,
+  default: 0
+},
+{
+  id: 'gunnerAmmo',
+  label: 'Mint Gunner: патроны',
+  type: 'number',
+  min: 0,
+  max: 100,
+  step: 1,
+  default: 3
+},
+{
+  id: 'gunnerCooldown',
+  label: 'Mint Gunner: КД выстрела, сек.',
+  type: 'number',
+  min: 0,
+  max: 300,
+  step: 1,
+  default: 25
+}
+Настройки появятся в существующем окне автоматически: интерфейс строит поля из settingsSchema.
+
+Значения доступны роли через:
+
+js
+this.game.settings.gunnerAmmo
+this.game.settings.gunnerCooldown
+Настройки фиксируются для раунда. Менять баланс нужно до его запуска.
+
+4. Регистрируем роль в RolesPool
+В конструкторе Game найди:
+
+js
+this.roles = new RolesPool()
+  .register(Puny)
+  .register(Policeman)
+  .register(MintPuny)
+  .register(MintCook);
+Добавь новую роль:
+
+js
+this.roles = new RolesPool()
+  .register(Puny)
+  .register(Policeman)
+  .register(MintPuny)
+  .register(MintCook)
+  .register(MintGunner);
+После регистрации сервер умеет создавать её:
+
+js
+player.setRole('mint-gunner');
+Но одной регистрации недостаточно для случайной выдачи на старте — нужен следующий шаг.
+
+5. Добавляем роль в распределение
+В Game.start() обнови подсчёт специальных и мятных ролей:
+
+js
+const special =
+  settings.policemen +
+  settings.mintPunies +
+  settings.mintCooks +
+  settings.mintGunners;
+
+const mint =
+  settings.mintPunies +
+  settings.mintCooks +
+  settings.mintGunners;
+Проверки оставь:
+
+js
+check(
+  special <= roster.length,
+  'Слишком много специальных ролей.'
+);
+
+check(
+  mint > 0 && mint < roster.length,
+  'Нужен хотя бы один мятный и один мирный.'
+);
+Массив назначений:
+
+js
+const assignments = [
+  ...Array(settings.policemen).fill('policeman'),
+  ...Array(settings.mintPunies).fill('mint-punya'),
+  ...Array(settings.mintCooks).fill('mint-cook'),
+  ...Array(settings.mintGunners).fill('mint-gunner')
+];
+Остальную часть start() не меняй: оставшиеся игроки по-прежнему получают puny, а задания назначаются существующим кодом.
+
+6. Добавляем спрайт способности
+Положи PNG сюда:
+
+text
+public/assets/ui/abilities/gunner-shot.png
+В public/ingame.js найди abilitySprites и добавь:
+
+js
+const abilitySprites = {
+  lull: '/assets/ui/abilities/lull.png',
+  gun: '/assets/ui/abilities/gun.png',
+  sabotage: '/assets/ui/abilities/sabotage.png',
+  tea: '/assets/ui/abilities/tea.png',
+
+  'gunner-shot': '/assets/ui/abilities/gunner-shot.png'
+};
+Ключ должен точно совпадать с id способности:
+
+js
+id: 'gunner-shot'
+Перезарядка отобразится автоматически, потому что сервер использует тот же ключ:
+
+js
+attacker.cooldown('gunner-shot', seconds, now);
+Если назвать способность gunner-shot, а КД — gunner, сервер и интерфейс будут смотреть на разные таймеры.
+
+7. Добавляем звук
+В public/ingame.js, внутри execute(), найди таблицу звуков способностей:
+
+js
+const sound = {
+  gun: 'shot',
+  tea: 'tea',
+  lull: 'lull'
+}[payload.ability];
+Добавь:
+
+js
+const sound = {
+  gun: 'shot',
+  tea: 'tea',
+  lull: 'lull',
+  'gunner-shot': 'shot'
+}[payload.ability];
+Так используется уже существующий звук выстрела.
+
+Для отдельного звука:
+
+Положи файл, например:
+
+text
+public/assets/sounds/gunner-shot.wav
+Добавь 'gunner-shot' в массив names файла game-audio.js.
+
+В таблице выше укажи:
+
+js
+'gunner-shot': 'gunner-shot'
+Звук применения сейчас слышит применивший способность, а звук засыпания — жертва. Дополнительная рассылка всему матчу автоматически не производится.
+
+8. Правило усыпления
+Всегда используй общую точку:
+
+js
+Player.lull(attacker, target);
+Когда нужна анимация непосредственной атаки:
+
+js
+Player.lull(this.player, target);
+Когда персонаж засыпает самостоятельно или от отложенного эффекта:
+
+js
+Player.lull(null, target);
+Например:
+
+js
+// Выстрел.
+Player.lull(policeman, target);
+
+// Сработал чай.
+Player.lull(null, target);
+
+// Наказание полицейскому.
+Player.lull(null, policeman);
+Не пытайся изменять состояние через:
+
+js
+target.state = 'sleeping';
+Состояние хранится внутри Player, а общий метод ещё и создаёт событие для анимации.
+
+Не вызывай game.use() внутри обработчика роли
+Вот так неправильно:
+
+js
+use(id, target, now) {
+  this.player.lull(target);
+}
+player.lull() снова направляет запрос через game.use(). В зависимости от роли это даст повторный вызов обработчика или вызов не той способности.
+
+Внутри уже проверенной способности нужен непосредственный эффект:
+
+js
+Player.lull(this.player, target);
+9. Перезарядки и отложенные эффекты
+Перезарядка
+js
+player.requireReady('ability-id', now);
+
+// Эффект способности.
+
+player.cooldown('ability-id', 30, now);
+Число 30 — секунды. Преобразование в миллисекунды делает Player.cooldown().
+
+Собрания не продлевают КД.
+
+Отложенное действие
+Для новых отложенных эффектов используй тот же принцип, что у чая: абсолютный дедлайн в состоянии матча и обработку в Game.tick().
+
+js
+{
+  targetId: target.id,
+  dueAt: now + delaySeconds * 1000
+}
+Не добавляй проверку:
+
+js
+if (game.meetings.blocked) return;
+в общий обработчик таймеров. Иначе снова получится остановка эффектов на собрании.
+
+Также заранее реши, что происходит, если цель:
+
+уснула до срабатывания;
+
+была изгнана;
+
+была разбужена;
+
+сменила роль.
+
+У нынешнего чая эффект при срабатывании пропускает уже неактивную цель.
+
+10. Особые типы целей
+Текущий интерфейс targets: true предназначен для выбора другого бодрствующего игрока.
+
+Он не подходит без доработки для:
+
+пробуждения спящих;
+
+способности на самого себя;
+
+выбора нескольких игроков;
+
+выбора системы вместо игрока.
+
+Например, для роли, пробуждающей спящих, мало написать:
+
+js
+target.getUp();
+Нужно также:
+
+Разрешить выбор спящих в клиентском списке.
+
+На сервере проверить, что цель именно спит, а не изгнана.
+
+Не использовать обычный assertTarget(), который требует бодрствующую цель.
+
+Изгнанного нельзя пробудить через getUp().
+
+11. Роли со способностями на собрании
+На сервере уже предусмотрен метод:
+
+js
+canUseDuringMeeting(id) {
+  return false;
+}
+Будущая роль может разрешить конкретное действие:
+
+js
+canUseDuringMeeting(id) {
+  return id === 'meeting-shot';
+}
+Но этого пока недостаточно для готовой механики: текущий клиент блокирует обычные способности на собрании, а само голосование открывается модальным окном.
+
+Для такой роли понадобится добавить её кнопку непосредственно в экран собрания и учесть разрешение в клиентских проверках. Глобально разрешать все способности на собрании не нужно.
+
+12. Данные роли и смена роли
+Личные данные
+Если игроку нужно показывать дополнительные параметры, расширяй snapshot() роли:
+
+js
+snapshot() {
+  return {
+    ...super.snapshot(),
+    ammo: this.ammo
+  };
+}
+Они попадут в:
+
+js
+state.me.role.ammo
+Не добавляй скрытые параметры в Game.publicPlayers() — его получают другие участники.
+
+Смена роли
+js
+player.setRole('mint-gunner');
+Создаёт новый экземпляр роли, но сохраняет сам объект Player, его состояние и существующие перезарядки.
+
+При этом конструктор новой роли выполнится заново. В нашем примере патроны снова возьмутся из настройки:
+
+js
+this.ammo = this.game.settings.gunnerAmmo;
+Если при повторном превращении патроны должны сохраняться, их нужно хранить в отдельном постоянном состоянии игрока. Это отдельное правило, а не автоматическое поведение setRole().
+
+Чек-лист новой роли
+text
+[ ] Собственный уникальный static id
+[ ] Правильный родитель и команда
+[ ] Правильные настоящие/фальшивые задания
+[ ] Класс зарегистрирован в RolesPool
+[ ] Добавлены настройки хоста
+[ ] Добавлена выдача роли в Game.start()
+[ ] Способности описаны в abilities
+[ ] Сервер проверяет цель, ресурсы и КД
+[ ] ID способности совпадает с ключом КД
+[ ] Добавлен PNG и запись в abilitySprites
+[ ] При необходимости подключён звук
+[ ] Усыпление проходит через Player.lull(attacker, target)
+[ ] Отложенные эффекты не останавливаются на собрании
+[ ] Скрытые данные не попадают в publicPlayers()

@@ -1,0 +1,17 @@
+[
+  { "name": "Белый", "id": "white", "asset": "assets/player/white.png", "price": 0, "free": true },
+  { "name": "Черный", "id": "black", "asset": "assets/player/black.png", "price": 0, "free": true },
+  { "name": "Красный", "id": "red", "asset": "assets/player/red.png", "price": 0, "free": true },
+  { "name": "Синий", "id": "blue", "asset": "assets/player/blue.png", "price": 0, "free": true },
+  { "name": "Зеленый", "id": "green", "asset": "assets/player/green.png", "price": 0, "free": true },
+  { "name": "Желтый", "id": "yellow", "asset": "assets/player/yellow.png", "price": 0, "free": true },
+  { "name": "Оранжевый", "id": "orange", "asset": "assets/player/orange.png", "price": 0, "free": true },
+  { "name": "Лаймовый", "id": "lime", "asset": "assets/player/lime.png", "price": 0, "free": true },
+  { "name": "Голубой", "id": "cyan", "asset": "assets/player/cyan.png", "price": 0, "free": true },
+  { "name": "Розовый", "id": "rose", "asset": "assets/player/rose.png", "price": 0, "free": true },
+  { "name": "Фиолетовый", "id": "purple", "asset": "assets/player/purple.png", "price": 0, "free": true },
+  { "name": "Светло-голубой", "id": "lightblue", "asset": "assets/player/lightblue.png", "price": 0, "free": true },
+  { "name": "Светло-фиолетовый", "id": "lightpurple", "asset": "assets/player/lightpurple.png", "price": 0, "free": true },
+  { "name": "Светло-розовый", "id": "pink", "asset": "assets/player/pink.png", "price": 0, "free": true },
+  { "name": "Радужный", "id": "rainbow", "asset": "assets/player/rainbow.png", "price": 120, "free": false }
+]

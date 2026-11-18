@@ -1,0 +1,13 @@
+{
+  "name": "mint-puny-irl-irt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "markdown-it": "^15.0.3",
+    "socket.io": "^4.8.1"
+  }
+}

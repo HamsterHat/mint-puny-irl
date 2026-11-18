@@ -1,0 +1,17 @@
+[
+  { "name": "Без Шляпки", "id": "no_hat", "asset": "assets/hats/no_hat.png", "price": 0, "free": true },
+  { "name": "Колпак Повара", "id": "chef_hat", "asset": "assets/hats/chef_hat.png", "price": 95, "free": false },
+  { "name": "Зеленая Фуражка", "id": "green_cap", "asset": "assets/hats/green_cap.png", "price": 155, "free": false },
+  { "name": "Черный Цилиндр", "id": "top_hat", "asset": "assets/hats/top_hat.png", "price": 140, "free": false },
+  { "name": "Панамка", "id": "panama", "asset": "assets/hats/panama.png", "price": 60, "free": false },
+  { "name": "Зимняя Шапка", "id": "winter_hat", "asset": "assets/hats/winter_hat.png", "price": 150, "free": false },
+  { "name": "Коричневая Шляпа", "id": "brown_hat", "asset": "assets/hats/brown_hat.png", "price": 95, "free": false },
+  { "name": "Кепка", "id": "cap", "asset": "assets/hats/cap.png", "price": 90, "free": false },
+  { "name": "Ниндзя - Повязка", "id": "ninja_band", "asset": "assets/hats/ninja_band.png", "price": 160, "free": false },
+  { "name": "Корона", "id": "crown", "asset": "assets/hats/crown.png", "price": 210, "free": false },
+  { "name": "Каска", "id": "helmet", "asset": "assets/hats/helmet.png", "price": 160, "free": false },
+  { "name": "Шапка - Снеговик", "id": "snowman", "asset": "assets/hats/snowman.png", "price": 90, "free": false },
+  { "name": "Шапка Санты", "id": "santa_hat", "asset": "assets/hats/santa_hat.png", "price": 90, "free": false },
+  { "name": "Кастрюля", "id": "pot", "asset": "assets/hats/pot.png", "price": 95, "free": false },
+  { "name": "Розовая Зимняя Шапка", "id": "winter_hat_pink", "asset": "assets/hats/winter_hat_pink.png", "price": 5, "currency": "punium", "free": false }
+]

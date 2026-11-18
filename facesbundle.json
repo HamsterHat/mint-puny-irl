@@ -1,0 +1,9 @@
+[
+  { "name": "Обычное", "id": "smile", "asset": "assets/face/smile.png", "price": 0, "free": true },
+  { "name": "Грустное", "id": "sad", "asset": "assets/face/sad.png", "price": 0, "free": true },
+  { "name": "Злое", "id": "angry", "asset": "assets/face/angry.png", "price": 0, "free": true },
+  { "name": "Веселое", "id": "happy", "asset": "assets/face/happy.png", "price": 0, "free": true },
+  { "name": "Плачущее", "id": "cry", "asset": "assets/face/cry.png", "price": 0, "free": true },
+  { "name": "Шокированное", "id": "shocked", "asset": "assets/face/shocked.png", "price": 0, "free": true },
+  { "name": "Улыбочка =)", "id": "smile2", "asset": "assets/face/smile2.png", "price": 999, "free": false }
+]

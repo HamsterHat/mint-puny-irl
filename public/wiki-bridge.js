@@ -1,0 +1,45 @@
+'use strict';
+(() => {
+  if(window.GameWiki)return;
+  let dialog=null,frame=null,ready=false,requestedPage=null,provider=()=>typeof state!=='undefined'?state:null,lastContext='',previousFocus=null;
+  const origin=location.origin;
+  function send(message){if(frame?.contentWindow)frame.contentWindow.postMessage(message,origin);}
+  function publicContext(){let s;try{s=provider();}catch{return{settings:null,roleId:null};}
+    const phases=['setup','intro','playing','finished'];
+    return{settings:s&&phases.includes(s.phase)&&s.settings&&typeof s.settings==='object'?s.settings:null,roleId:typeof s?.me?.role?.id==='string'?s.me.role.id:null};
+  }
+  function sync(force=false){if(!dialog?.open||!ready)return;const data=publicContext(),key=JSON.stringify(data);if(force||key!==lastContext){lastContext=key;send({type:'punya-wiki:context',context:data});}}
+  function ensure(){
+    if(dialog)return;
+    if(!document.getElementById('game-wiki-style')){const link=document.createElement('link');link.id='game-wiki-style';link.rel='stylesheet';link.href='/wiki-bridge.css';document.head.appendChild(link);}
+    dialog=document.createElement('dialog');dialog.id='game-wiki-dialog';dialog.setAttribute('aria-label','Энциклопедия Пуней');
+    const bar=document.createElement('div');bar.className='game-wiki-bar';const title=document.createElement('span');title.textContent='📖 Вики';
+    const closeButton=document.createElement('button');closeButton.type='button';closeButton.textContent='✕';closeButton.setAttribute('aria-label','Закрыть вики');closeButton.addEventListener('click',close);
+    bar.appendChild(title);bar.appendChild(closeButton);dialog.appendChild(bar);
+    frame=document.createElement('iframe');frame.title='Энциклопедия Пуней';frame.src='/wiki/?embed=1';dialog.appendChild(frame);document.body.appendChild(dialog);
+    dialog.addEventListener('close',()=>{document.body.classList.remove('game-wiki-is-open');if(previousFocus?.isConnected)previousFocus.focus();});
+    dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)close();}});
+  }
+  function open(options={}){
+    requestedPage=typeof options==='string'?options:options.articleId??null;ensure();
+    if(!dialog.open){previousFocus=document.activeElement;dialog.showModal();}document.body.classList.add('game-wiki-is-open');
+    sync(true);if(ready&&requestedPage){send({type:'punya-wiki:navigate',id:requestedPage});requestedPage=null;}
+  }
+  function close(){if(dialog?.open)dialog.close();}
+  function addButton(container){
+    let button=document.getElementById('game-wiki-button');if(button)return button;
+    button=document.createElement('button');button.id='game-wiki-button';button.type='button';button.textContent='📖 Вики';button.addEventListener('click',()=>open());
+    if(container)container.appendChild(button);else{button.classList.add('game-wiki-floating');document.body.appendChild(button);}return button;
+  }
+  window.addEventListener('message',event=>{
+    if(event.origin!==origin||event.source!==frame?.contentWindow||!event.data||typeof event.data!=='object')return;
+    if(event.data.type==='punya-wiki:ready'){ready=true;sync(true);if(requestedPage){send({type:'punya-wiki:navigate',id:requestedPage});requestedPage=null;}}
+    if(event.data.type==='punya-wiki:close')close();
+  });
+  window.GameWiki={open,close,addButton,setContextProvider(fn){if(typeof fn!=='function')throw new Error('Нужна функция состояния.');provider=fn;sync(true);},refresh:()=>sync(true)};
+  function boot(){
+    if(!document.getElementById('game-wiki-style')){const link=document.createElement('link');link.id='game-wiki-style';link.rel='stylesheet';link.href='/wiki-bridge.css';document.head.appendChild(link);}
+    addButton(document.querySelector('.top-actions'));setInterval(()=>sync(),500);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();

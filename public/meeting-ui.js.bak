@@ -1,0 +1,167 @@
+ 'use strict';
+window.MeetingUI=(()=>{
+  const $=id=>document.getElementById(id);
+  let send,notify,state,gameId=null,viewerId=null,meetingId=null,selectedId=null;
+  let voting=false,acting=false,locallyVotedId=null,shownResultId=null;
+  let animationGeneration=0,terminationGeneration=0,playersSignature='',actionsSignature='';
+  let actions=[],myVoteTargetId=null,myProtectedTargets=new Set();
+  const imageCache=new Map(),suppressedResults=new Set(),terminationEvents=new Set();
+  const SKIP=Symbol('skip');
+  function element(tag,cls,text){const item=document.createElement(tag);if(cls)item.className=cls;if(text!==undefined)item.textContent=text;return item;}
+  function button(cls,label,title,callback){const item=element('button',cls,label);item.type='button';item.title=title;item.setAttribute('aria-label',title);item.addEventListener('click',callback);return item;}
+  function markerKey(){return state?.me?`punya:meeting-markers:${encodeURIComponent(state.me.id)}`:null;}
+  function saveMarkers(){
+    const key=markerKey();if(!key||!state.meeting)return;
+    try{sessionStorage.setItem(key,JSON.stringify({gameId:state.gameId,meetingId:state.meeting.id,voted:locallyVotedId===state.meeting.id,voteTargetId:myVoteTargetId,protectedTargets:[...myProtectedTargets]}));}catch{}
+  }
+  function restoreMarkers(){
+    myVoteTargetId=null;myProtectedTargets=new Set();
+    const key=markerKey();if(!key||!state.meeting)return;
+    try{
+      const saved=JSON.parse(sessionStorage.getItem(key));
+      if(!saved||saved.gameId!==state.gameId||saved.meetingId!==state.meeting.id)return;
+      const ids=new Set(state.players.map(player=>player.id));
+      if(saved.voted===true){locallyVotedId=state.meeting.id;if(ids.has(saved.voteTargetId))myVoteTargetId=saved.voteTargetId;}
+      if(Array.isArray(saved.protectedTargets))myProtectedTargets=new Set(saved.protectedTargets.filter(id=>ids.has(id)));
+    }catch{}
+  }
+  function addMarkers(plaque,player,meeting){
+    const own=player.id===state.me?.id;
+    if(meeting.voted.includes(player.id)||(own&&locallyVotedId===meeting.id)){
+      const voted=element('span','kick-vote-marker');voted.title='Игрок проголосовал';voted.setAttribute('aria-label','Игрок проголосовал');
+      voted.appendChild(element('span','','I'));voted.appendChild(element('span','','VOTED'));plaque.appendChild(voted);
+    }
+    const defended=Boolean(action('protect'))&&myProtectedTargets.has(player.id);
+    if(defended){
+      const shield=element('span','kick-target-marker kick-defend-marker','🛡');shield.title='Ты защитил этого игрока';shield.setAttribute('aria-label',shield.title);plaque.appendChild(shield);
+    }else if(myVoteTargetId===player.id){
+      const thumb=element('span','kick-target-marker kick-voted-target','👎');thumb.title='Ты проголосовал против этого игрока';thumb.setAttribute('aria-label',thumb.title);plaque.appendChild(thumb);
+    }
+  }
+  function load(src){
+    if(imageCache.has(src))return imageCache.get(src);
+    const promise=new Promise(resolve=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>{imageCache.delete(src);resolve(null);};image.src=src;});imageCache.set(src,promise);return promise;
+  }
+  async function draw(canvas,equipped={}){
+    const layers=[['player',equipped.color],['face',equipped.face],['glasses',equipped.glasses],['hats',equipped.hat]];
+    const images=await Promise.all(layers.map(([folder,id])=>typeof id==='string'&&id?load(`/assets/${folder}/${encodeURIComponent(id)}.png`):Promise.resolve(null)));
+    const context=canvas.getContext('2d');if(!context)return;context.clearRect(0,0,canvas.width,canvas.height);context.imageSmoothingEnabled=false;
+    for(const image of images)if(image)context.drawImage(image,Math.round((canvas.width-image.naturalWidth)/2),Math.round((canvas.height-image.naturalHeight)/2));
+  }
+  function action(id){return actions.find(item=>item.id===id);}
+  function hasVoted(){return Boolean(state?.meeting&&(locallyVotedId===state.meeting.id||state.meeting.voted.includes(state.me?.id)));}
+  function mayVote(){const meeting=state?.meeting,me=state?.me;return Boolean(meeting&&me&&!voting&&!acting&&!hasVoted()&&meeting.eligible.includes(me.id));}
+  function mayAct(item){return Boolean(item&&!item.disabled&&!acting&&!voting&&state?.me&&state.me.state==='awake');}
+  function allowedTarget(id,player){if(id==='judge')return player.state!=='exiled';if(id==='protect')return player.state==='awake';return false;}
+  function showError(text){if($('meeting-error'))$('meeting-error').textContent=text;if(text&&!$('meeting-dialog').open)notify('Голосование',text);}
+  async function vote(targetId){
+    if(!mayVote())return;
+    const id=state.meeting.id,currentGame=state.gameId;
+    voting=true;showError('');renderPlayers(true);renderFooter();
+    try{
+      await send('game:vote',{targetId});
+      if(state?.gameId===currentGame&&state.meeting?.id===id){locallyVotedId=id;myVoteTargetId=targetId;saveMarkers();}
+    }catch(error){showError(error.message);}
+    finally{voting=false;selectedId=null;renderPlayers(true);renderFooter();}
+  }
+  async function useAbility(id,targetId){
+    const item=action(id);if(!mayAct(item))return;
+    if(id!=='terminate'){
+      const player=state.players.find(candidate=>candidate.id===targetId);
+      if(!player||!state.meeting||!allowedTarget(id,player))return;
+    }
+    const currentGame=state.gameId,currentMeeting=state.meeting?.id;
+    acting=true;showError('');renderPlayers(true);renderFooter();renderEjectionActions();
+    try{
+      const payload={ability:id};if(targetId!==undefined)payload.targetId=targetId;
+      const result=await send('game:ability',payload);
+      if(id==='protect'&&result?.blocked===false&&state?.gameId===currentGame&&state.meeting?.id===currentMeeting){myProtectedTargets.add(targetId);saveMarkers();}
+      selectedId=null;
+    }catch(error){showError(error.message);window.GameAudio?.play('error');}
+    finally{acting=false;renderPlayers(true);renderFooter();renderEjectionActions();}
+  }
+  function badgeId(player){const badge=player.equipped?.badge;return typeof badge==='string'&&/^[a-zA-Z0-9_-]{1,80}$/.test(badge)?badge:'default';}
+  function installLayout(){
+    if(!$('vote-markers-style')){const link=element('link');link.id='vote-markers-style';link.rel='stylesheet';link.href='/vote-markers.css';document.head.appendChild(link);}
+    const dialog=$('meeting-dialog');dialog.classList.add('kick-dialog');
+    $('meeting-actions')?.closest('.meeting-action-panel')?.setAttribute('hidden','');
+    const oldFooter=$('meeting-skip').closest('.meeting-footer');if(!oldFooter)return;oldFooter.classList.add('kick-footer');
+    if(!$('meeting-skip-area')){
+      const skipArea=element('div','kick-skip-area');skipArea.id='meeting-skip-area';const skip=$('meeting-skip');skip.textContent='СКИП';oldFooter.prepend(skipArea);skipArea.appendChild(skip);
+      const controls=element('div','kick-skip-confirm');controls.id='meeting-skip-confirm';controls.hidden=true;
+      controls.appendChild(button('kick-yes','✓','Подтвердить СКИП',()=>vote(null)));
+      controls.appendChild(button('kick-no','×','Отменить СКИП',()=>{selectedId=null;renderPlayers(true);renderFooter();}));skipArea.appendChild(controls);
+    }
+    if(!$('meeting-terminate-slot')){const slot=element('div','kick-terminate-slot');slot.id='meeting-terminate-slot';oldFooter.appendChild(slot);}
+    $('meeting-players').classList.add('kick-grid');
+    if(!$('meeting-grid-scroll')){const scroll=element('div','kick-grid-scroll');scroll.id='meeting-grid-scroll';$('meeting-players').before(scroll);scroll.appendChild($('meeting-players'));}
+  }
+  function targetControls(player){
+    const controls=element('div','meeting-confirm kick-target-controls');controls.hidden=selectedId!==player.id;if(controls.hidden)return controls;
+    for(const [id,label,glyph]of [['protect','DEFEND','🛡'],['judge','OVERRULE','⚖']]){
+      const item=action(id);if(!item)continue;
+      const control=button(`kick-role-action kick-${id}`,'',`${label}: ${player.username} · ${item.name}`,()=>useAbility(id,player.id));
+      if(item.image){const icon=element('img');icon.src=item.image;icon.alt='';control.appendChild(icon);}else control.appendChild(element('span','',glyph));
+      control.appendChild(element('span','kick-action-label',label));control.disabled=!mayAct(item)||!allowedTarget(id,player);controls.appendChild(control);
+    }
+    const yes=button('kick-yes','✓',`Голосовать против ${player.username}`,()=>vote(player.id));yes.disabled=!mayVote()||!state.meeting.eligible.includes(player.id);controls.appendChild(yes);
+    const no=button('kick-no','×','Закрыть действия',()=>{selectedId=null;renderPlayers(true);renderFooter();});no.disabled=acting||voting;controls.appendChild(no);return controls;
+  }
+  function renderPlayers(force=false){
+    const meeting=state?.meeting;if(!meeting)return;
+    const signature=JSON.stringify([meeting.id,meeting.eligible,meeting.voted,state.players,state.me?.id,state.me?.state,selectedId===SKIP?'@skip':selectedId,voting,acting,locallyVotedId,actions,myVoteTargetId,[...myProtectedTargets]]);
+    if(!force&&signature===playersSignature)return;playersSignature=signature;
+    const container=$('meeting-players');container.replaceChildren();const meEligible=Boolean(state.me&&meeting.eligible.includes(state.me.id));
+    for(const player of state.players){
+      const card=element('article','meeting-player kick-player');card.classList.toggle('selected',selectedId===player.id);
+      const inactive=player.state!=='awake';card.classList.toggle('inactive',inactive);card.classList.toggle('sleeping',player.state==='sleeping');card.classList.toggle('exiled',player.state==='exiled');
+      const select=button('meeting-select kick-player-select','',`${player.username}${inactive?' — '+(player.state==='exiled'?'изгнан':'спит'):''}`,()=>{selectedId=selectedId===player.id?null:player.id;renderPlayers(true);renderFooter();});
+      const hasTargetAction=['judge','protect'].some(id=>mayAct(action(id))&&allowedTarget(id,player));
+      select.disabled=acting||voting||!state.me||(!meEligible&&!hasTargetAction)||(!meeting.eligible.includes(player.id)&&!hasTargetAction);
+      select.setAttribute('aria-expanded',String(selectedId===player.id));
+      const portrait=element('span','kick-portrait'),canvas=element('canvas');canvas.width=100;canvas.height=100;portrait.appendChild(canvas);if(inactive)portrait.appendChild(element('span','kick-sleep-cross','×'));
+      const plaque=element('span','kick-nameplate'),badge=badgeId(player);plaque.style.backgroundImage=`url(${JSON.stringify(`/assets/badges/${encodeURIComponent(badge)}.png`)})`;plaque.dataset.badge=badge;
+      plaque.appendChild(element('span','meeting-name kick-name',player.username));if(inactive)plaque.appendChild(element('small','kick-player-state',player.state==='exiled'?'Изгнан':'Спит'));
+      addMarkers(plaque,player,meeting);
+      select.appendChild(portrait);select.appendChild(plaque);card.appendChild(select);card.appendChild(targetControls(player));container.appendChild(card);draw(canvas,player.equipped);
+    }
+    $('meeting-vote-status').textContent=`Проголосовало: ${meeting.voted.length} / ${meeting.eligible.length}${hasVoted()?' · Твой голос принят':''}`;
+  }
+  function makeTerminate(){const item=action('terminate');if(!item)return null;const control=button('kick-terminate','TERMINATE','Прервать собрание',()=>useAbility('terminate'));control.disabled=!mayAct(item);return control;}
+  function renderFooter(){
+    const skip=$('meeting-skip'),confirm=$('meeting-skip-confirm'),slot=$('meeting-terminate-slot');if(!skip||!confirm||!slot)return;
+    skip.hidden=!state?.me;skip.disabled=!mayVote();confirm.hidden=selectedId!==SKIP||!state?.meeting||!state.me;
+    for(const control of confirm.querySelectorAll('button'))control.disabled=!mayVote();slot.replaceChildren();const terminate=makeTerminate();if(terminate)slot.appendChild(terminate);slot.hidden=!terminate;
+  }
+  function renderEjectionActions(){
+    const container=$('ejection-actions');if(!container)return;container.replaceChildren();const terminate=makeTerminate();if(terminate)container.appendChild(terminate);const wrapper=container.closest('.meeting-action-panel');if(wrapper)wrapper.hidden=!terminate;
+  }
+  function setActions(next,handler){const signature=JSON.stringify(next??[]);actions=next??[];if(signature===actionsSignature)return;actionsSignature=signature;renderPlayers(true);renderFooter();renderEjectionActions();}
+  async function showResult(result){
+    if(shownResultId===result.id||suppressedResults.has(result.id)||result.cancelled||result.terminated)return;shownResultId=result.id;if(state.serverTime>=result.animateUntil)return;
+    const token=++animationGeneration,overlay=$('ejection-overlay'),canvas=$('ejection-player'),target=state.players.find(player=>player.id===result.exiledId);
+    canvas.classList.remove('flying');canvas.hidden=!target;canvas.getContext('2d')?.clearRect(0,0,canvas.width,canvas.height);
+    $('ejection-title').textContent=target?`${target.username} отправляется в пруд`:'Никто не изгнан';overlay.hidden=false;
+    const duration=Math.max(0,result.animateUntil-state.serverTime),deadline=Date.now()+duration;setTimeout(()=>{if(token===animationGeneration)overlay.hidden=true;},duration);
+    if(target){await draw(canvas,target.equipped);if(token!==animationGeneration||Date.now()>=deadline)return;void canvas.offsetWidth;canvas.classList.add('flying');}
+  }
+  function terminate(event){
+    if(event?.gameId&&gameId&&event.gameId!==gameId)return;if(event?.id&&terminationEvents.has(event.id))return;if(event?.id)terminationEvents.add(event.id);
+    for(const id of [event?.meetingId,event?.resultId,state?.meetingResult?.id])if(id!==null&&id!==undefined)suppressedResults.add(id);
+    animationGeneration++;$('ejection-overlay').hidden=true;for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();
+    const overlay=$('termination-overlay');if(!overlay){notify('TERMINATE','<MEETING TERMINATED>');return;}
+    const token=++terminationGeneration;overlay.hidden=false;window.GameAudio?.play('error');setTimeout(()=>{if(token===terminationGeneration)overlay.hidden=true;},1800);
+  }
+  function update(next){
+    if(gameId!==next.gameId||viewerId!==(next.me?.id??null)){gameId=next.gameId;viewerId=next.me?.id??null;meetingId=null;selectedId=null;shownResultId=null;locallyVotedId=null;voting=false;acting=false;myVoteTargetId=null;myProtectedTargets=new Set();playersSignature='';actionsSignature='';animationGeneration++;suppressedResults.clear();terminationEvents.clear();$('ejection-overlay').hidden=true;}
+    state=next;const dialog=$('meeting-dialog'),meeting=state.meeting;
+    if(meeting){
+      if(meetingId!==meeting.id){meetingId=meeting.id;selectedId=null;locallyVotedId=null;voting=false;playersSignature='';restoreMarkers();showError('');}
+      $('meeting-title').textContent='Who will be kicked?';$('meeting-time').textContent=`${Math.max(0,Math.ceil((meeting.endsAt-state.serverTime)/1000))} сек.`;
+      renderPlayers();renderFooter();if(!dialog.open)dialog.showModal();
+    }else{if(dialog.open)dialog.close();if(state.meetingResult)showResult(state.meetingResult);}
+    renderEjectionActions();
+  }
+  function init(options){send=options.send;notify=options.notify;installLayout();$('meeting-dialog').addEventListener('cancel',event=>event.preventDefault());$('meeting-skip').addEventListener('click',()=>{if(!mayVote())return;selectedId=selectedId===SKIP?null:SKIP;renderPlayers(true);renderFooter();});options.socket?.on('game:meeting-terminated',terminate);}
+  return {init,update,setActions};
+})();
